@@ -517,7 +517,7 @@ function renderSug(){
   const etf=por["ETF"]||0;
   if(etf<0.5) add(`Solo el <b>${fmtP(etf)}</b> está en fondos diversificados. Con tu perfil, lo habitual es que un fondo indexado global (como el EUNL que ya tienes) sea el núcleo, y las acciones individuales que te gustan, la parte satélite.`);
   const mal=P.lista.filter(p=>p.tipo!=="Liquidez"&&p.pgPct!=null&&p.pgPct< -0.5);
-  if(mal.length) add(`${mal.map(p=>esc(p.ticker)).join(", ")} pierden más del 50 %. Antes de comprar más para «promediar», revisa si el motivo por el que entraste sigue en pie. Las pérdidas realizadas pueden compensar ganancias (en España hasta 4 años); con tu residencia entre países, confírmalo con un asesor.`);
+  if(mal.length) add(`${mal.map(p=>esc(p.ticker)).join(", ")} ${mal.length>1?"pierden":"pierde"} más del 50 %. Antes de comprar más para «promediar», revisa si el motivo por el que entraste sigue en pie. Las pérdidas realizadas pueden compensar ganancias (en España hasta 4 años); con tu residencia entre países, confírmalo con un asesor.`);
   if(new Date()<new Date("2027-03-01")) add(`Desde enero de 2027 podrás aportar unos 1.000 € al mes. Repartir esa aportación de forma periódica (siempre el mismo día y con un reparto fijo) reduce el riesgo de entrar en mal momento y te ayuda a corregir los pesos sin vender.`);
   if(A.saldo>0) add(`La cuenta remunerada rinde unos ${fmtE(A.saldo*TIN,0)} al año antes de impuestos (tributan como rendimientos del capital). Si es tu colchón de 5–6 meses de gastos, mantenlo ahí; lo que lo supere y no vayas a necesitar en años puede ir entrando poco a poco en tu plan de inversión.`);
   const old=P.lista.filter(p=>p.pr&&/antiguo|extracto/.test(p.pr.estado));
