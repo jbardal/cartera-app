@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mi Cartera</title>
+<meta name="theme-color" content="#0f3b3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Mi Cartera">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: una columna tipo app móvil, barra inferior fija con 5 pestañas */
+:root{
+  --bg:#f3f5f4; --surface:#ffffff; --ink:#122523; --muted:#5d6e6b; --line:#dfe6e4;
+  --brand:#0f3b3a; --brand-ink:#ffffff; --accent:#1f8a70;
+  --gain:#17804f; --loss:#c0392b; --warn:#b7791f; --chip:#e8efed;
+  --f-ui:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0c1615; --surface:#14211f; --ink:#e6efed; --muted:#93a8a4; --line:#24352f;
+  --brand:#0b2a29; --brand-ink:#e6efed; --accent:#3fbf98;
+  --gain:#43c785; --loss:#ef6b5b; --warn:#e3a94a; --chip:#1d2e2b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0c1615; --surface:#14211f; --ink:#e6efed; --muted:#93a8a4; --line:#24352f;
+  --brand:#0b2a29; --brand-ink:#e6efed; --accent:#3fbf98;
+  --gain:#43c785; --loss:#ef6b5b; --warn:#e3a94a; --chip:#1d2e2b; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-ui);-webkit-font-smoothing:antialiased;
+  padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
+header.top{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--brand-ink);
+  padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));
+  display:flex;align-items:center;gap:12px}
+header.top h1{font-size:17px;margin:0;font-weight:800;letter-spacing:.2px;flex:1}
+header.top .sub{font-size:12px;opacity:.75;font-weight:500}
+.iconbtn{background:transparent;border:1px solid rgba(255,255,255,.25);color:inherit;border-radius:10px;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
+.iconbtn svg{width:20px;height:20px}
+main{max-width:640px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
+section[hidden]{display:none!important}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
+.hero{background:var(--brand);color:var(--brand-ink);border:0}
+.hero .label{opacity:.75;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.hero .big{font-size:34px;font-weight:600;margin:4px 0 2px}
+.row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.kpi{background:rgba(255,255,255,.08);border-radius:10px;padding:10px}
+.kpi .k{font-size:12px;opacity:.8}.kpi .v{font-size:17px;font-weight:600}
+.gain{color:var(--gain)}.loss{color:var(--loss)}
+.hero .gain{color:#7ee2b0}.hero .loss{color:#ffb4a8}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:4px 2px 0;font-weight:800}
+.bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--chip);margin:10px 0 8px}
+.bar span{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.alert{display:flex;gap:10px;padding:10px 12px;border-radius:10px;background:var(--chip);font-size:14px}
+.alert b{color:var(--warn)}
+.alerts{display:flex;flex-direction:column;gap:8px}
+.pos{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.pos:last-child{border-bottom:0}
+.pos .t{font-weight:800;font-size:15px}.pos .n{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pos .left{min-width:0}
+.pos .detail{display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:13px;color:var(--muted);padding-top:6px}
+.pos .detail b{color:var(--ink);font-weight:600}
+.chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--chip);color:var(--muted);letter-spacing:.02em}
+.chip.ok{color:var(--gain)}.chip.old{color:var(--warn)}
+.weightbar{height:4px;background:var(--chip);border-radius:2px;overflow:hidden}
+.weightbar span{display:block;height:100%;background:var(--accent)}
+.weightbar span.over{background:var(--warn)}
+form{display:flex;flex-direction:column;gap:12px}
+label{display:flex;flex-direction:column;gap:5px;font-size:13px;font-weight:700;color:var(--muted)}
+input,select,textarea{font:16px var(--f-ui);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-width:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{flex-direction:row;align-items:center;gap:10px;font-weight:600;color:var(--ink)}
+.check input{width:20px;height:20px}
+.btn{font:700 15px var(--f-ui);border:0;border-radius:12px;padding:13px 16px;cursor:pointer;background:var(--accent);color:#fff}
+.btn.sec{background:var(--chip);color:var(--ink)}
+.btn.danger{background:var(--loss)}
+.btn:disabled{opacity:.5;cursor:default}
+.btn:focus-visible,.iconbtn:focus-visible,nav button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.btns{display:flex;gap:10px;flex-wrap:wrap}.btns .btn{flex:1}
+.hint{font-size:13px;color:var(--muted)}
+.op{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+.op:last-child{border-bottom:0}
+.op .l{min-width:0}.op .ty{font-weight:700}.op .d{font-size:12px;color:var(--muted)}
+.op .acts{display:flex;gap:6px;margin-top:6px}
+.op .acts button{font:600 12px var(--f-ui);border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:5px 9px;cursor:pointer}
+.confirm{background:var(--chip);border-radius:10px;padding:10px;margin-top:6px;font-size:13px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--surface);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(5,1fr);padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+nav.tabs button{background:none;border:0;color:var(--muted);font:700 11px var(--f-ui);display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;cursor:pointer;border-radius:10px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-current="page"]{color:var(--accent);background:var(--chip)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:600;z-index:9;max-width:90vw}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:right;padding:6px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+.scroll{overflow-x:auto}
+.empty{text-align:center;color:var(--muted);padding:24px 8px}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div style="flex:1;min-width:0">
+    <h1>Mi Cartera</h1>
+    <div class="sub" id="sub">Cargando…</div>
+  </div>
+  <button class="iconbtn" id="btnRefresh" aria-label="Actualizar datos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button>
+  <button class="iconbtn" id="btnCfg" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+</header>
+
+<main>
+  <!-- AJUSTES -->
+  <section id="v-cfg" hidden>
+    <div class="card">
+      <h2 style="margin:0 0 10px">Conexión con tu repositorio</h2>
+      <p class="hint">La app lee y guarda tus datos en tu repositorio privado de GitHub. El token se guarda solo en este móvil; nadie más lo ve.</p>
+      <form id="fCfg">
+        <label>Token de GitHub (permiso <i>Contents: Read and write</i> solo para tu repositorio)
+          <input id="cfgToken" type="password" autocomplete="off" placeholder="github_pat_…"></label>
+        <div class="grid2">
+          <label>Usuario <input id="cfgOwner" value="jbardal"></label>
+          <label>Repositorio <input id="cfgRepo" value="cartera-revolut"></label>
+        </div>
+        <div class="btns"><button class="btn" type="submit">Guardar y conectar</button><button class="btn sec" type="button" id="cfgForget">Olvidar token</button></div>
+        <div class="hint" id="cfgMsg"></div>
+      </form>
+    </div>
+    <div class="card hint">Crear el token: GitHub → Settings → Developer settings → Fine-grained tokens → Generate. <i>Only select repositories</i>: <b>cartera-revolut</b>. <i>Contents</i>: <b>Read and write</b>. Nada más.</div>
+  </section>
+
+  <!-- INICIO -->
+  <section id="v-home">
+    <div class="card hero">
+      <div class="label">Valor de tu cartera</div>
+      <div class="big num" id="hValor">—</div>
+      <div class="row"><span id="hRes" class="num">—</span><span id="hPrecios" style="font-size:12px;opacity:.75"></span></div>
+      <div class="kpis">
+        <div class="kpi"><div class="k">Aportado neto</div><div class="v num" id="hAport">—</div></div>
+        <div class="kpi"><div class="k">Ganado vendiendo y en dividendos</div><div class="v num" id="hReal">—</div></div>
+      </div>
+    </div>
+    <h2>Reparto</h2>
+    <div class="card"><div class="bar" id="hBar"></div><div class="legend" id="hLegend"></div></div>
+    <h2>Avisos</h2>
+    <div class="alerts" id="hAlerts"><div class="card empty">Sin datos todavía.</div></div>
+  </section>
+
+  <!-- POSICIONES -->
+  <section id="v-pos" hidden>
+    <h2>Posiciones <span class="hint" style="text-transform:none;letter-spacing:0">· toca una para ver el detalle</span></h2>
+    <div class="card" id="pList"><div class="empty">Conecta la app para ver tus posiciones.</div></div>
+  </section>
+
+  <!-- AÑADIR -->
+  <section id="v-add" hidden>
+    <div class="card">
+      <h2 style="margin:0 0 12px" id="fTitle">Nueva operación</h2>
+      <form id="fOp">
+        <div class="grid2">
+          <label>Tipo
+            <select id="oTipo">
+              <option>Compra</option><option>Venta</option><option>Dividendo</option>
+              <option value="Ingreso">Aportación</option><option>Retirada</option>
+              <option>Staking</option><option>Recompensa</option><option>Ajuste</option><option value="Devolución de capital">Devolución de capital</option>
+            </select></label>
+          <label>Fecha y hora <input id="oFecha" type="datetime-local" required></label>
+        </div>
+        <label id="lActivo">Activo
+          <select id="oActivo"></select></label>
+        <div id="nuevoActivo" class="card" style="background:var(--bg)" hidden>
+          <div class="grid2">
+            <label>Ticker <input id="nTicker" placeholder="p. ej. SAN" autocapitalize="characters"></label>
+            <label>Nombre <input id="nNombre" placeholder="Banco Santander"></label>
+            <label>Tipo de activo <select id="nTipo"><option>Acción</option><option>ETF</option><option>Cripto</option></select></label>
+            <label>Divisa <select id="nDivisa"><option>EUR</option><option>USD</option></select></label>
+            <label>Fuente de precio <select id="nFuente"><option value="eodhd">EODHD (acciones/ETF)</option><option value="coingecko">CoinGecko (cripto)</option><option value="ninguna">Sin precio automático</option></select></label>
+            <label>Símbolo en la fuente <input id="nSimbolo" placeholder="SAN.MC · bitcoin"></label>
+          </div>
+          <p class="hint">Ejemplos de símbolo: Madrid <b>SAN.MC</b>, París <b>AIR.PA</b>, Xetra <b>EUNL.XETRA</b>, EE. UU. <b>AAPL.US</b>; cripto: el id de CoinGecko (<b>bitcoin</b>). Ojo: el plan gratuito de EODHD permite 20 consultas al día y ya usas 18.</p>
+        </div>
+        <div class="grid2" id="gQty">
+          <label>Cantidad <input id="oCant" type="number" step="any" inputmode="decimal"></label>
+          <label>Precio por unidad <input id="oPrecio" type="number" step="any" inputmode="decimal"></label>
+        </div>
+        <div class="grid2" id="gImp">
+          <label>Comisión <input id="oCom" type="number" step="any" inputmode="decimal" value="0"></label>
+          <label><span id="lImporte">Importe total</span> <input id="oImporte" type="number" step="any" inputmode="decimal"></label>
+        </div>
+        <div class="grid2" id="gEur">
+          <label>Divisa <select id="oDivisa"><option>EUR</option><option>USD</option></select></label>
+          <label>Importe en euros <input id="oEur" type="number" step="any" inputmode="decimal"></label>
+        </div>
+        <label class="check" id="lFlujo"><input type="checkbox" id="oFlujo" checked> <span id="tFlujo">Pagada con dinero nuevo (cuenta como aportación)</span></label>
+        <label>Nota <input id="oNota" maxlength="160"></label>
+        <p class="hint" id="oHint"></p>
+        <div class="btns"><button class="btn" type="submit" id="oSave">Guardar operación</button><button class="btn sec" type="button" id="oCancel" hidden>Cancelar edición</button></div>
+      </form>
+    </div>
+  </section>
+
+  <!-- HISTORIAL -->
+  <section id="v-hist" hidden>
+    <div class="card"><label>Buscar <input id="hFiltro" placeholder="Ticker, tipo o año (p. ej. NVDA, Venta, 2025)"></label></div>
+    <div class="card" id="hList"><div class="empty">Sin operaciones.</div></div>
+  </section>
+
+  <!-- INFORME -->
+  <section id="v-rep" hidden>
+    <div class="card">
+      <form id="fRep">
+        <label>Periodo
+          <select id="rPeriodo"><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="ytd">Este año</option><option value="all">Desde el principio</option></select></label>
+        <div class="btns"><button class="btn" type="submit">Generar informe</button></div>
+      </form>
+    </div>
+    <div class="card" id="rOut"><div class="empty">Elige un periodo y pulsa «Generar informe».</div></div>
+    <div class="btns" id="rBtns" hidden><button class="btn sec" id="rDown">Descargar (.html)</button><button class="btn sec" id="rCopy">Copiar texto</button></div>
+  </section>
+</main>
+
+<nav class="tabs" aria-label="Secciones">
+  <button data-v="home" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Inicio</button>
+  <button data-v="pos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Posiciones</button>
+  <button data-v="add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Añadir</button>
+  <button data-v="hist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2"/></svg>Historial</button>
+  <button data-v="rep"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6"/></svg>Informe</button>
+</nav>
+
+<script>
+"use strict";
+/* ---------- utilidades ---------- */
+const $ = id => document.getElementById(id);
+const fmtE = (v,d=2) => (v==null||isNaN(v)) ? "—" : v.toLocaleString("es-ES",{style:"currency",currency:"EUR",minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtN = (v,d=2) => (v==null||isNaN(v)) ? "—" : v.toLocaleString("es-ES",{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtP = v => (v==null||isNaN(v)) ? "—" : (v*100).toLocaleString("es-ES",{maximumFractionDigits:1,minimumFractionDigits:1})+" %";
+const sign = v => v>0 ? "+" : "";
+const esc = s => String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}}, del(k){try{localStorage.removeItem(k)}catch(e){}} };
+function toast(msg){ const t=document.createElement("div"); t.className="toast"; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3200); }
+const b64e = s => { const u=new TextEncoder().encode(s); let bin=""; for(let i=0;i<u.length;i+=8192) bin+=String.fromCharCode.apply(null,u.subarray(i,i+8192)); return btoa(bin); };
+const b64d = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g,"")),c=>c.charCodeAt(0)));
+function parseCSV(text){ const lines=text.replace(/\r/g,"").split("\n").filter(l=>l.length); if(!lines.length) return []; const h=lines[0].split(";"); return lines.slice(1).map(l=>{const v=l.split(";"); const o={}; h.forEach((k,i)=>o[k]=v[i]??""); return o;}); }
+function toCSV(rows, cols){ return cols.join(";")+"\n"+rows.map(r=>cols.map(c=>String(r[c]??"").replace(/[;\r\n]/g,",")).join(";")).join("\n")+"\n"; }
+const num = x => { if(x===""||x==null) return null; const v=parseFloat(String(x).replace(",",".")); return isNaN(v)?null:v; };
+const OPCOLS=["id","fecha","cuenta","tipo","ticker","cantidad","precio","divisa","importe","comision","importe_eur","flujo_eur","nota"];
+const ACTCOLS=["ticker","tipo","fuente","simbolo","divisa","nombre"];
+
+/* ---------- GitHub ---------- */
+const cfg = () => ({ token: store.get("gh_token")||"", owner: store.get("gh_owner")||"jbardal", repo: store.get("gh_repo")||"cartera-revolut" });
+async function gh(path, opts={}){
+  const c=cfg(); if(!c.token) throw new Error("Falta el token: ábrelo en Ajustes.");
+  const r=await fetch(`https://api.github.com/repos/${c.owner}/${c.repo}/contents/${path}${opts.method?"":"?ref=main"}`,{
+    method: opts.method||"GET", cache:"no-store",
+    headers:{ "Authorization":"Bearer "+c.token, "Accept": opts.raw ? "application/vnd.github.raw" : "application/vnd.github+json", "X-GitHub-Api-Version":"2022-11-28", ...(opts.body?{"Content-Type":"application/json"}:{}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined });
+  if(r.status===401) throw new Error("GitHub no acepta el token (401). Revísalo en Ajustes.");
+  if(r.status===403) throw new Error("El token no tiene permiso para esto (403). Necesita Contents: Read and write.");
+  if(r.status===404) throw new Error("No encuentro "+path+" (404). Revisa usuario, repositorio y que el token tenga acceso.");
+  if(r.status===409) throw new Error("Otro cambio se guardó a la vez. Pulsa actualizar y vuelve a intentarlo.");
+  if(!r.ok) throw new Error("GitHub respondió "+r.status+".");
+  return opts.raw ? r.text() : r.json();
+}
+async function readFile(path){ const j=await gh(path); return { text: j.content? b64d(j.content) : await gh(path,{raw:true}), sha:j.sha }; }
+async function writeFile(path, text, sha, msg){ const j=await gh(path,{method:"PUT", body:{message:msg, content:b64e(text), sha, branch:"main"}}); return j.content.sha; }
+
+/* ---------- estado ---------- */
+const S = { ops:[], opsSha:null, act:[], actSha:null, precios:{}, fx:null, live:{}, loaded:false, port:null, editId:null };
+
+async function loadAll(){
+  $("sub").innerHTML='<span class="spin"></span> Actualizando…';
+  try{
+    const [o,a,p]=await Promise.all([readFile("data/operaciones.csv"), readFile("config/activos.csv"), gh("data/precios.csv",{raw:true})]);
+    S.ops=parseCSV(o.text); S.opsSha=o.sha; S.act=parseCSV(a.text); S.actSha=a.sha;
+    S.precios={}; for(const r of parseCSV(p)){ if(num(r.precio) && r.estado!=="sin dato") S.precios[r.ticker]=r; }
+    S.fx = num(S.precios.EURUSD?.precio) || 1.1;
+    await loadLive();
+    S.loaded=true; compute(); renderAll();
+    $("sub").textContent="Actualizado "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
+  }catch(e){ $("sub").textContent=e.message; if(!cfg().token) show("cfg"); toast(e.message); }
+}
+async function loadLive(){
+  S.live={}; const ids=S.act.filter(a=>a.fuente==="coingecko"&&a.tipo!=="Candidato").map(a=>a.simbolo);
+  if(!ids.length) return;
+  try{ const r=await fetch("https://api.coingecko.com/api/v3/simple/price?vs_currencies=eur&include_last_updated_at=true&ids="+ids.join(",")); if(!r.ok) return; const j=await r.json();
+    for(const a of S.act) if(a.fuente==="coingecko" && j[a.simbolo]?.eur) S.live[a.ticker]={precio:j[a.simbolo].eur, t:new Date(j[a.simbolo].last_updated_at*1000)};
+  }catch(e){ /* sin conexión: se usan los precios guardados */ }
+}
+const actOf = t => S.act.find(a=>a.ticker===t);
+function priceOf(t){
+  if(S.live[t]) return {precio:S.live[t].precio, estado:"en directo", cuando:S.live[t].t.toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})};
+  const p=S.precios[t]; if(!p) return null;
+  return {precio:num(p.precio), estado:p.estado, cuando:(p.fecha||"").split("-").reverse().join("/")+(p.hora_madrid?" "+p.hora_madrid:"")};
+}
+
+/* ---------- cálculo (coste medio por posición) ---------- */
+function compute(upTo){
+  const ops=[...S.ops].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const pos={}, cash={"Valores USD":0,"Valores EUR":0}, events=[]; let aportado=0, realizado=0, rentas=0;
+  for(const o of ops){
+    if(upTo && o.fecha>upTo) break;
+    const q=num(o.cantidad)||0, imp=num(o.importe)||0, eur=num(o.importe_eur)??imp, t=o.ticker;
+    aportado += num(o.flujo_eur)||0;
+    const P = t ? (pos[t] ||= {ticker:t, qty:0, cost:0, costEur:0, divisa:o.divisa||actOf(t)?.divisa||"EUR", cuenta:o.cuenta, real:0, n:0}) : null;
+    if(P) P.n++;
+    switch(o.tipo){
+      case "Compra": P.qty+=q; P.cost+=imp; P.costEur+=eur; if(o.divisa) P.divisa=o.divisa; if(cash[o.cuenta]!=null && !(num(o.flujo_eur))) cash[o.cuenta]-=imp; break;
+      case "Venta": { const f=P.qty>0?Math.min(1,q/P.qty):0; const ce=P.costEur*f; const g=eur-ce; P.real+=g; realizado+=g; events.push({fecha:o.fecha,tipo:"Venta",ticker:t,eur:g});
+        P.cost-=P.cost*f; P.costEur-=ce; P.qty-=q; if(P.qty<1e-9){P.qty=0;P.cost=0;P.costEur=0;} if(cash[o.cuenta]!=null && !(num(o.flujo_eur))) cash[o.cuenta]+=imp; break; }
+      case "Staking": case "Recompensa": case "Ajuste": P.qty+=q; break;
+      case "Dividendo": case "Devolución de capital": rentas+=eur; events.push({fecha:o.fecha,tipo:o.tipo,ticker:t,eur}); if(cash[o.cuenta]!=null) cash[o.cuenta]+=imp; break;
+      case "Ingreso": if(cash[o.cuenta]!=null) cash[o.cuenta]+=imp; break;
+      case "Retirada": if(cash[o.cuenta]!=null) cash[o.cuenta]-=imp; break;
+    }
+  }
+  const lista=[]; let total=0;
+  for(const P of Object.values(pos)){ if(P.qty<1e-9) continue;
+    const a=actOf(P.ticker), pr=priceOf(P.ticker), fx=(P.divisa==="USD")?S.fx:1;
+    const precio = pr?.precio ?? (P.cost/P.qty);
+    const valor = P.qty*precio/fx;
+    lista.push({...P, nombre:a?.nombre||P.ticker, tipo:a?.tipo||"Acción", precio, pr, valor, pg:valor-P.costEur, pgPct:P.costEur?valor/P.costEur-1:null, medio:P.cost/P.qty});
+    total+=valor; }
+  const usd=cash["Valores USD"]; if(Math.abs(usd)>0.005){ lista.push({ticker:"USD",nombre:"Efectivo en dólares",tipo:"Liquidez",qty:usd,precio:1,divisa:"USD",valor:usd/S.fx,costEur:usd/S.fx,pg:0,pgPct:0,medio:1,n:0}); total+=usd/S.fx; }
+  const eurc=cash["Valores EUR"]; if(Math.abs(eurc)>0.005){ lista.push({ticker:"EUR",nombre:"Efectivo en euros",tipo:"Liquidez",qty:eurc,precio:1,divisa:"EUR",valor:eurc,costEur:eurc,pg:0,pgPct:0,medio:1,n:0}); total+=eurc; }
+  lista.forEach(p=>p.peso=total?p.valor/total:0); lista.sort((a,b)=>b.valor-a.valor);
+  const res={lista,total,aportado,realizado,rentas,events};
+  if(!upTo) S.port=res; return res;
+}
+
+/* ---------- vistas ---------- */
+const COLORS={"Acción":"var(--brand)","ETF":"var(--accent)","Cripto":"var(--warn)","Liquidez":"var(--muted)"};
+function renderHome(){
+  const P=S.port; if(!P) return;
+  $("hValor").textContent=fmtE(P.total,0);
+  const res=P.total-P.aportado, pct=P.aportado?res/P.aportado:0;
+  $("hRes").innerHTML=`<span class="${res>=0?"gain":"loss"}">${sign(res)}${fmtE(res,0)} (${sign(pct)}${fmtP(pct)})</span> desde 2023`;
+  $("hAport").textContent=fmtE(P.aportado,0); $("hReal").textContent=fmtE(P.realizado+P.rentas,0);
+  const ul=Object.values(S.precios).map(p=>p.fecha+" "+(p.hora_madrid||"")).sort().pop()||"";
+  $("hPrecios").textContent=ul?"Precios: "+ul.trim().split(" ")[0].split("-").reverse().join("/")+" "+(ul.trim().split(" ")[1]||""):"";
+  const por={}; P.lista.forEach(p=>por[p.tipo]=(por[p.tipo]||0)+p.peso);
+  $("hBar").innerHTML=Object.entries(por).map(([k,v])=>`<span style="width:${(v*100).toFixed(2)}%;background:${COLORS[k]||"var(--muted)"}"></span>`).join("");
+  $("hLegend").innerHTML=Object.entries(por).map(([k,v])=>`<span><i style="background:${COLORS[k]||"var(--muted)"}"></i>${esc(k)} ${fmtP(v)}</span>`).join("");
+  const al=[];
+  const over=P.lista.filter(p=>p.tipo==="Acción"&&p.peso>0.10);
+  if(over.length) al.push(`<b>${over.length} empresas</b> pesan más del 10 %: ${over.map(p=>esc(p.ticker)+" "+fmtP(p.peso)).join(", ")}.`);
+  const cr=por["Cripto"]||0; if(cr>0.05) al.push(`<b>Cripto</b> pesa ${fmtP(cr)}, por encima del 5 % de referencia.`);
+  const etf=por["ETF"]||0; if(etf<0.5) al.push(`La parte diversificada (fondos) es solo el <b>${fmtP(etf)}</b>.`);
+  const old=P.lista.filter(p=>p.pr && /antiguo|extracto/.test(p.pr.estado)); if(old.length) al.push(`<b>${old.length} precios</b> no son de hoy (fin de semana, festivo o fallo de la fuente).`);
+  $("hAlerts").innerHTML=al.length?al.map(a=>`<div class="alert"><span>⚑</span><span>${a}</span></div>`).join(""):'<div class="card empty">Sin avisos.</div>';
+}
+function renderPos(){
+  const P=S.port; if(!P||!P.lista.length){ $("pList").innerHTML='<div class="empty">Sin posiciones.</div>'; return; }
+  $("pList").innerHTML=P.lista.map(p=>{
+    const cls=p.pg>=0?"gain":"loss", est=p.pr?`<span class="chip ${p.pr.estado==="actual"||p.pr.estado==="en directo"?"ok":(/antiguo|extracto/.test(p.pr.estado)?"old":"")}">${esc(p.pr.estado)} · ${esc(p.pr.cuando)}</span>`:(p.tipo==="Liquidez"?"":'<span class="chip old">sin precio automático</span>');
+    return `<div class="pos" tabindex="0" data-t="${esc(p.ticker)}">
+      <div class="row"><div class="left"><div class="t">${esc(p.ticker)}</div><div class="n">${esc(p.nombre)}</div></div>
+        <div style="text-align:right"><div class="num" style="font-weight:600">${fmtE(p.valor)}</div><div class="num ${cls}" style="font-size:13px">${p.tipo==="Liquidez"?"":sign(p.pg)+fmtE(p.pg,0)+" · "+sign(p.pgPct)+fmtP(p.pgPct)}</div></div></div>
+      <div class="weightbar" title="Peso ${fmtP(p.peso)}"><span class="${p.tipo==="Acción"&&p.peso>0.1?"over":""}" style="width:${Math.min(100,p.peso*100*4).toFixed(1)}%"></span></div>
+      <div class="row" style="font-size:12px;color:var(--muted)"><span>Peso ${fmtP(p.peso)}</span>${est}</div>
+      <div class="detail" hidden>
+        <span>Cantidad</span><b class="num">${fmtN(p.qty,p.tipo==="Cripto"?6:4)}</b>
+        <span>Precio actual</span><b class="num">${fmtN(p.precio,4)} ${esc(p.divisa)}</b>
+        <span>Precio medio de compra</span><b class="num">${fmtN(p.medio,4)} ${esc(p.divisa)}</b>
+        <span>Coste total</span><b class="num">${fmtE(p.costEur)}</b>
+        <span>Operaciones</span><b class="num">${p.n}</b>
+      </div></div>`; }).join("");
+  document.querySelectorAll(".pos").forEach(el=>{ const tg=()=>{ const d=el.querySelector(".detail"); d.hidden=!d.hidden; }; el.addEventListener("click",tg); el.addEventListener("keydown",e=>{ if(e.key==="Enter") tg(); }); });
+}
+function opLine(o){
+  const imp=num(o.importe), q=num(o.cantidad);
+  const what = o.tipo==="Compra"||o.tipo==="Venta" ? `${fmtN(q,q<10?6:2)} × ${fmtN(num(o.precio),2)} ${esc(o.divisa)}` : (imp?`${fmtN(imp)} ${esc(o.divisa||"EUR")}`:(q?`${fmtN(q,6)} unidades`:""));
+  return `<div class="op" data-id="${esc(o.id)}"><div class="l"><div><span class="ty">${esc(o.tipo==="Ingreso"?"Aportación":o.tipo)}</span> ${esc(o.ticker||"")}</div>
+    <div class="d">${esc(o.fecha.slice(0,16).replace(/(\d+)-(\d+)-(\d+)/,"$3/$2/$1"))} · ${what}${o.nota?" · "+esc(o.nota):""}</div>
+    <div class="acts"><button data-a="edit">Editar</button><button data-a="del">Borrar</button></div><div class="cf"></div></div>
+    <div class="num" style="text-align:right;white-space:nowrap">${num(o.importe_eur)!=null?fmtE(num(o.importe_eur)):""}</div></div>`;
+}
+function renderHist(){
+  const f=$("hFiltro").value.trim().toLowerCase();
+  const ops=[...S.ops].sort((a,b)=>b.fecha.localeCompare(a.fecha)).filter(o=>!f||[o.ticker,o.tipo,o.fecha,o.nota,o.tipo==="Ingreso"?"aportación":""].join(" ").toLowerCase().includes(f));
+  $("hList").innerHTML=ops.length?ops.slice(0,300).map(opLine).join("")+(ops.length>300?`<div class="hint">Mostrando 300 de ${ops.length}. Filtra para ver más.</div>`:""):'<div class="empty">Sin operaciones.</div>';
+}
+$("hList").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return; const row=b.closest(".op"); const id=row.dataset.id; const o=S.ops.find(x=>x.id===id);
+  if(b.dataset.a==="edit"){ fillForm(o); show("add"); }
+  if(b.dataset.a==="del"){ row.querySelector(".cf").innerHTML=`<div class="confirm">¿Borrar esta operación? No se puede deshacer desde la app (queda en el historial de GitHub). <div class="btns" style="margin-top:8px"><button class="btn danger" data-a="yes">Sí, borrar</button><button class="btn sec" data-a="no">No</button></div></div>`; }
+  if(b.dataset.a==="no"){ row.querySelector(".cf").innerHTML=""; }
+  if(b.dataset.a==="yes"){ saveOps(S.ops.filter(x=>x.id!==id),"Borrar operación "+id).then(ok=>ok&&toast("Operación borrada")); }
+});
+$("hFiltro").addEventListener("input",renderHist);
+function renderAll(){ renderHome(); renderPos(); renderHist(); fillActivos(); }
+
+/* ---------- formulario ---------- */
+function fillActivos(){
+  const sel=$("oActivo"), cur=sel.value;
+  const tick=[...new Set([...S.act.filter(a=>a.tipo!=="Divisa").map(a=>a.ticker), ...S.ops.map(o=>o.ticker).filter(Boolean)])].sort();
+  sel.innerHTML=tick.map(t=>`<option value="${esc(t)}">${esc(t)}${actOf(t)?.nombre?" · "+esc(actOf(t).nombre):""}</option>`).join("")+'<option value="__nuevo">+ Activo nuevo…</option>';
+  if(cur) sel.value=cur;
+}
+const nowLocal = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,16); };
+function syncForm(){
+  const tipo=$("oTipo").value, nuevo=$("oActivo").value==="__nuevo";
+  $("nuevoActivo").hidden=!nuevo;
+  const sinActivo = tipo==="Ingreso"||tipo==="Retirada"; $("lActivo").hidden=sinActivo; if(sinActivo) $("nuevoActivo").hidden=true;
+  const conQty = ["Compra","Venta","Staking","Recompensa","Ajuste"].includes(tipo); $("gQty").hidden=!conQty;
+  $("oPrecio").closest("label").hidden = !(tipo==="Compra"||tipo==="Venta");
+  const conImp = !["Staking","Recompensa","Ajuste"].includes(tipo); $("gImp").hidden=!conImp; $("gEur").hidden=!conImp;
+  $("oCom").closest("label").hidden = !(tipo==="Compra"||tipo==="Venta");
+  $("lImporte").textContent = tipo==="Compra"?"Total pagado (con comisión)":tipo==="Venta"?"Total cobrado (neto)":"Importe";
+  $("lFlujo").hidden = !(tipo==="Compra"||tipo==="Venta");
+  $("tFlujo").textContent = tipo==="Compra" ? "Pagada con dinero nuevo (cuenta como aportación)" : "Saco el dinero de la cartera (cuenta como retirada)";
+  const a=actOf($("oActivo").value); if(a && !S.editId) $("oDivisa").value=a.divisa||"EUR"; if(nuevo) $("oDivisa").value=$("nDivisa").value;
+  $("oHint").textContent = tipo==="Ajuste" ? "Ajuste: corrige la cantidad (positiva o negativa) sin tocar el coste, por ejemplo comisiones cobradas en la propia cripto." : tipo==="Staking"||tipo==="Recompensa" ? "Unidades recibidas sin pagar nada." : tipo==="Compra"&&a?.tipo==="Cripto" ? "Cripto: pon la cantidad que realmente recibes (Revolut descuenta la comisión en la propia moneda) y el total pagado en euros." : "";
+  if(!S.editId) autoCalc();
+}
+function autoCalc(){
+  const tipo=$("oTipo").value, q=num($("oCant").value), p=num($("oPrecio").value), c=num($("oCom").value)||0;
+  if((tipo==="Compra"||tipo==="Venta") && q!=null && p!=null && document.activeElement!==$("oImporte")) $("oImporte").value=(Math.round((q*p+(tipo==="Compra"?c:-c))*100)/100).toString();
+  const imp=num($("oImporte").value);
+  if(imp!=null && document.activeElement!==$("oEur")) $("oEur").value=(Math.round(($("oDivisa").value==="USD"?imp/S.fx:imp)*100)/100).toString();
+}
+["oTipo","oActivo","nDivisa"].forEach(id=>$(id).addEventListener("change",syncForm));
+["oCant","oPrecio","oCom","oImporte","oDivisa"].forEach(id=>$(id).addEventListener("input",autoCalc));
+$("oDivisa").addEventListener("change",autoCalc);
+function resetForm(){ S.editId=null; $("fOp").reset(); $("oFecha").value=nowLocal(); $("oCom").value="0"; $("fTitle").textContent="Nueva operación"; $("oSave").textContent="Guardar operación"; $("oCancel").hidden=true; syncForm(); }
+function fillForm(o){
+  S.editId=o.id; $("fTitle").textContent="Editar operación"; $("oSave").textContent="Guardar cambios"; $("oCancel").hidden=false;
+  $("oTipo").value=o.tipo; $("oFecha").value=o.fecha.slice(0,16).replace(" ","T"); fillActivos(); if(o.ticker) $("oActivo").value=o.ticker;
+  $("oCant").value=o.cantidad; $("oPrecio").value=o.precio; $("oCom").value=o.comision||"0"; $("oImporte").value=o.importe; $("oDivisa").value=o.divisa||"EUR"; $("oEur").value=o.importe_eur;
+  $("oFlujo").checked=(num(o.flujo_eur)||0)!==0; $("oNota").value=o.nota||""; syncForm();
+}
+$("oCancel").addEventListener("click",()=>{ resetForm(); show("hist"); });
+async function saveOps(newOps,msg){
+  try{ $("sub").innerHTML='<span class="spin"></span> Guardando…';
+    S.opsSha=await writeFile("data/operaciones.csv", toCSV([...newOps].sort((a,b)=>a.fecha.localeCompare(b.fecha)),OPCOLS), S.opsSha, msg);
+    S.ops=newOps; compute(); renderAll(); $("sub").textContent="Guardado "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}); return true;
+  }catch(e){ toast(e.message); $("sub").textContent=e.message; return false; }
+}
+$("fOp").addEventListener("submit",async e=>{
+  e.preventDefault(); if(!S.loaded){ toast("Conecta primero la app en Ajustes."); return; }
+  const tipo=$("oTipo").value; let ticker=$("oActivo").value; const sinActivo=tipo==="Ingreso"||tipo==="Retirada";
+  if(sinActivo) ticker="";
+  if(ticker==="__nuevo"){
+    ticker=$("nTicker").value.trim().toUpperCase(); if(!ticker){ toast("Escribe el ticker del activo nuevo."); return; }
+    if(!actOf(ticker)){ const nuevo={ticker,tipo:$("nTipo").value,fuente:$("nFuente").value==="ninguna"?"ninguna":$("nFuente").value,simbolo:$("nSimbolo").value.trim()||ticker,divisa:$("nDivisa").value,nombre:$("nNombre").value.trim()||ticker};
+      try{ const acts=[...S.act,nuevo]; S.actSha=await writeFile("config/activos.csv",toCSV(acts,ACTCOLS),S.actSha,"Nuevo activo "+ticker); S.act=acts; }catch(err){ toast(err.message); return; } }
+  }
+  const a=actOf(ticker), divisa=sinActivo?$("oDivisa").value:$("oDivisa").value;
+  const cuenta = a?.tipo==="Cripto" ? "Cripto" : (divisa==="USD"?"Valores USD":"Valores EUR");
+  const imp=num($("oImporte").value), eur=num($("oEur").value)??imp, q=num($("oCant").value);
+  if(["Compra","Venta"].includes(tipo) && (!q||!imp)){ toast("Faltan la cantidad y el importe."); return; }
+  if(["Staking","Recompensa","Ajuste"].includes(tipo) && !q){ toast("Falta la cantidad."); return; }
+  if(["Dividendo","Ingreso","Retirada","Devolución de capital"].includes(tipo) && !imp){ toast("Falta el importe."); return; }
+  let flujo=0; if(tipo==="Ingreso") flujo=eur; if(tipo==="Retirada") flujo=-eur; if(tipo==="Compra"&&$("oFlujo").checked) flujo=eur; if(tipo==="Venta"&&$("oFlujo").checked) flujo=-eur;
+  const id=S.editId || "op"+Date.now().toString(36);
+  const op={id, fecha:$("oFecha").value.replace("T"," ")+":00", cuenta: sinActivo?(divisa==="USD"?"Valores USD":"Valores EUR"):cuenta, tipo, ticker, cantidad:q??"", precio:num($("oPrecio").value)??"", divisa:["Staking","Recompensa","Ajuste"].includes(tipo)?"":divisa, importe:imp??"", comision:num($("oCom").value)??"", importe_eur:eur??"", flujo_eur:Math.round(flujo*100)/100, nota:$("oNota").value.trim()};
+  const newOps = S.editId ? S.ops.map(x=>x.id===S.editId?op:x) : [...S.ops, op];
+  $("oSave").disabled=true;
+  const ok=await saveOps(newOps,(S.editId?"Editar ":"Nueva ")+tipo.toLowerCase()+" "+(ticker||""));
+  $("oSave").disabled=false;
+  if(ok){ toast(S.editId?"Cambios guardados":"Operación guardada"); resetForm(); show("pos"); }
+});
+
+/* ---------- informe ---------- */
+let lastReport={html:"",text:""};
+$("fRep").addEventListener("submit",e=>{
+  e.preventDefault(); if(!S.port){ toast("Conecta primero la app."); return; }
+  const per=$("rPeriodo").value, hoy=new Date();
+  const desde = per==="all" ? "0000" : per==="ytd" ? hoy.getFullYear()+"-01-01" : new Date(hoy-per*86400000).toISOString().slice(0,10);
+  const inicio = per==="all" ? null : compute(desde+" 00:00:00"); const P=compute();
+  const opsP=S.ops.filter(o=>o.fecha>=desde).sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  const aportP=opsP.reduce((s,o)=>s+(num(o.flujo_eur)||0),0);
+  const evP=P.events.filter(x=>x.fecha>=desde);
+  const realP=evP.filter(x=>x.tipo==="Venta").reduce((s,x)=>s+x.eur,0), rentP=evP.filter(x=>x.tipo!=="Venta").reduce((s,x)=>s+x.eur,0);
+  const valIni=inicio?inicio.total:null;
+  const varP = valIni!=null ? (P.total-valIni-aportP) : null;
+  const titulo = {"7":"últimos 7 días","30":"últimos 30 días","ytd":"este año","all":"desde el principio"}[per];
+  const over=P.lista.filter(p=>p.tipo==="Acción"&&p.peso>0.1);
+  const html=`<h3 style="margin:0 0 4px">Informe de cartera · ${esc(titulo)}</h3><div class="hint">Generado el ${hoy.toLocaleString("es-ES")} · precios: último dato guardado de cada activo</div>
+  <div class="kpis" style="grid-template-columns:1fr 1fr">
+   <div><div class="hint">Valor actual</div><b class="num">${fmtE(P.total)}</b></div>
+   <div><div class="hint">Aportado neto total</div><b class="num">${fmtE(P.aportado)}</b></div>
+   <div><div class="hint">Resultado total</div><b class="num ${P.total-P.aportado>=0?"gain":"loss"}">${sign(P.total-P.aportado)}${fmtE(P.total-P.aportado)}</b></div>
+   <div><div class="hint">Aportado en el periodo</div><b class="num">${fmtE(aportP)}</b></div>
+   ${varP!=null?`<div><div class="hint">Variación de mercado en el periodo*</div><b class="num ${varP>=0?"gain":"loss"}">${sign(varP)}${fmtE(varP)}</b></div>`:""}
+   <div><div class="hint">Ventas y rentas en el periodo</div><b class="num">${fmtE(realP+rentP)}</b></div>
+  </div>
+  ${varP!=null?'<p class="hint">*Valor actual − valor al inicio − aportaciones del periodo. El valor al inicio usa los precios de hoy (la app no guarda precios antiguos), así que mide sobre todo el efecto de comprar y vender.</p>':""}
+  <h4>Posiciones</h4><div class="scroll"><table><tr><th>Activo</th><th>Valor</th><th>Peso</th><th>Resultado</th></tr>
+  ${P.lista.map(p=>`<tr><td>${esc(p.ticker)}</td><td class="num">${fmtE(p.valor,0)}</td><td class="num">${fmtP(p.peso)}</td><td class="num ${p.pg>=0?"gain":"loss"}">${p.tipo==="Liquidez"?"":fmtP(p.pgPct)}</td></tr>`).join("")}</table></div>
+  <h4>Operaciones del periodo (${opsP.length})</h4>${opsP.length?`<div class="scroll"><table><tr><th>Fecha</th><th>Tipo</th><th>Activo</th><th>Importe €</th></tr>${opsP.slice(0,100).map(o=>`<tr><td>${esc(o.fecha.slice(0,10))}</td><td>${esc(o.tipo==="Ingreso"?"Aportación":o.tipo)}</td><td>${esc(o.ticker)}</td><td class="num">${num(o.importe_eur)!=null?fmtN(num(o.importe_eur)):""}</td></tr>`).join("")}</table></div>`:'<p class="hint">Ninguna.</p>'}
+  <h4>Puntos de atención</h4><ul>${over.length?`<li>${over.length} empresas por encima del 10 %: ${over.map(p=>esc(p.ticker)).join(", ")}.</li>`:"<li>Ninguna empresa supera el 10 %.</li>"}
+  <li>Parte en fondos: ${fmtP(P.lista.filter(p=>p.tipo==="ETF").reduce((s,p)=>s+p.peso,0))}.</li></ul>
+  <p class="hint">Informe de apoyo, no asesoramiento financiero.</p>`;
+  $("rOut").innerHTML=html; $("rBtns").hidden=false;
+  const text=`Informe de cartera (${titulo}) – ${hoy.toLocaleDateString("es-ES")}\nValor actual: ${fmtE(P.total)}\nAportado neto: ${fmtE(P.aportado)}\nResultado total: ${sign(P.total-P.aportado)}${fmtE(P.total-P.aportado)}\nAportado en el periodo: ${fmtE(aportP)}\nVentas y rentas en el periodo: ${fmtE(realP+rentP)}\n\nPosiciones:\n`+P.lista.map(p=>`- ${p.ticker}: ${fmtE(p.valor,0)} (${fmtP(p.peso)})${p.tipo==="Liquidez"?"":", "+fmtP(p.pgPct)}`).join("\n")+`\n\nOperaciones del periodo: ${opsP.length}\n`+opsP.slice(0,50).map(o=>`- ${o.fecha.slice(0,10)} ${o.tipo==="Ingreso"?"Aportación":o.tipo} ${o.ticker} ${num(o.importe_eur)!=null?fmtE(num(o.importe_eur)):""}`).join("\n");
+  const css=[...document.querySelectorAll("style")].map(s=>s.textContent).join("\n");
+  lastReport={text, html:`<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Informe de cartera</title><style>${css} body{padding:16px;max-width:760px;margin:auto}</style></head><body><div class="card">${html}</div></body></html>`};
+});
+$("rDown").addEventListener("click",()=>{ const b=new Blob([lastReport.html],{type:"text/html"}); const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download="informe-cartera-"+new Date().toISOString().slice(0,10)+".html"; document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1000); });
+$("rCopy").addEventListener("click",async()=>{ try{ await navigator.clipboard.writeText(lastReport.text); toast("Texto copiado"); }catch(e){ toast("No se pudo copiar"); } });
+
+/* ---------- navegación y ajustes ---------- */
+function show(v){ document.querySelectorAll("main>section").forEach(s=>s.hidden=s.id!=="v-"+v); document.querySelectorAll("nav.tabs button").forEach(b=>b.toggleAttribute("aria-current",b.dataset.v===v)); document.querySelectorAll("nav.tabs button[aria-current]").forEach(b=>b.setAttribute("aria-current","page")); window.scrollTo(0,0); }
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>{ if(b.dataset.v==="add"&&!S.editId) resetForm(); show(b.dataset.v); }));
+$("btnCfg").addEventListener("click",()=>{ const c=cfg(); $("cfgOwner").value=c.owner; $("cfgRepo").value=c.repo; $("cfgToken").value=""; $("cfgMsg").textContent=c.token?"Hay un token guardado en este móvil.":"No hay token guardado."; show("cfg"); });
+$("btnRefresh").addEventListener("click",loadAll);
+$("fCfg").addEventListener("submit",async e=>{ e.preventDefault(); const t=$("cfgToken").value.trim(); if(t) store.set("gh_token",t); store.set("gh_owner",$("cfgOwner").value.trim()||"jbardal"); store.set("gh_repo",$("cfgRepo").value.trim()||"cartera-revolut"); $("cfgToken").value=""; $("cfgMsg").textContent="Conectando…"; await loadAll(); if(S.loaded){ $("cfgMsg").textContent="Conectado."; show("home"); } });
+$("cfgForget").addEventListener("click",()=>{ store.del("gh_token"); $("cfgMsg").textContent="Token borrado de este móvil."; });
+resetForm();
+if(cfg().token) loadAll(); else { $("sub").textContent="Sin conectar"; $("btnCfg").click(); }
+</script>
+</body>
+</html>
+
