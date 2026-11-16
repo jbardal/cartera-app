@@ -231,6 +231,7 @@ body{background-image:var(--pat);background-size:240px 240px}
   <!-- POSICIONES -->
   <section id="v-pos" hidden>
     <h2>Posiciones <span class="hint" style="text-transform:none;letter-spacing:0">· toca una para ver el detalle</span></h2>
+    <div class="card" id="pObj" hidden></div>
     <div class="card" id="pList"><div class="empty">Conecta la app para ver tus posiciones.</div></div>
   </section>
 
@@ -353,7 +354,7 @@ async function readFile(path){ const j=await gh(path); return { text: j.content?
 async function writeFile(path, text, sha, msg){ const j=await gh(path,{method:"PUT", body:{message:msg, content:b64e(text), sha, branch:"main"}}); return j.content.sha; }
 
 /* ---------- estado ---------- */
-const S = { ops:[], opsSha:null, act:[], actSha:null, precios:{}, fx:null, live:{}, loaded:false, port:null, editId:null, aho:[], ahoSha:null, esc:null, img:{}, vol:{} };
+const S = { ops:[], opsSha:null, act:[], actSha:null, precios:{}, fx:null, live:{}, loaded:false, port:null, editId:null, aho:[], ahoSha:null, esc:null, img:{}, vol:{}, obj:null };
 const AHOCOLS=["id","fecha","tipo","importe","nota"], TIN=0.02;
 
 async function loadAll(){
@@ -363,7 +364,8 @@ async function loadAll(){
     S.ops=parseCSV(o.text); S.opsSha=o.sha; S.act=parseCSV(a.text); S.actSha=a.sha;
     S.precios={}; for(const r of parseCSV(p)){ if(num(r.precio) && r.estado!=="sin dato") S.precios[r.ticker]=r; }
     S.fx = num(S.precios.EURUSD?.precio) || 1.1;
-    const [h,nw,rk]=await Promise.all([gh("data/historico.csv",{raw:true}).catch(()=>""), gh("data/noticias.json",{raw:true}).catch(()=>""), gh("data/riesgo.csv",{raw:true}).catch(()=>"")]);
+    const [h,nw,rk,ob]=await Promise.all([gh("data/historico.csv",{raw:true}).catch(()=>""), gh("data/noticias.json",{raw:true}).catch(()=>""), gh("data/riesgo.csv",{raw:true}).catch(()=>""), gh("data/objetivos.json",{raw:true}).catch(()=>"")]);
+    try{ S.obj=ob?JSON.parse(ob):null; }catch(err){ S.obj=null; }
     S.hist=parseCSV(h); try{ S.news=nw?JSON.parse(nw):null; }catch(err){ S.news=null; }
     S.vol={}; for(const r of parseCSV(rk)){ const v=num(r.vol_anual); if(v) S.vol[r.ticker]=v; }
     try{ const ah=await readFile("data/ahorro.csv"); S.aho=parseCSV(ah.text); S.ahoSha=ah.sha; }catch(err){ S.aho=[]; S.ahoSha=null; }
@@ -464,20 +466,39 @@ function renderHome(){
   const old=P.lista.filter(p=>p.pr && /antiguo|extracto/.test(p.pr.estado)); if(old.length) al.push(`<b>${old.length} precios</b> no son de hoy (fin de semana, festivo o fallo de la fuente).`);
   $("hAlerts").innerHTML=al.length?al.map(a=>`<div class="alert"><span>⚑</span><span>${a}</span></div>`).join(""):'<div class="card empty">Sin avisos.</div>';
 }
+/* ---------- informe de objetivos (data/objetivos.json, elaborado por Claude con datos públicos) ---------- */
+function objOf(t){ const o=S.obj&&S.obj.items&&S.obj.items[t]; if(!o) return null; const a=(o.analistas||[]).map(x=>x.media).filter(x=>x>0); return {...o, am:a.length?a.reduce((s,x)=>s+x,0)/a.length:null}; }
+function renderObj(){
+  const box=$("pObj"), P=S.port; if(!S.obj||!P){ box.hidden=true; return; } box.hidden=false;
+  let base=0, conObj=0; const rows=[];
+  for(const p of P.lista){ const o=objOf(p.ticker); const f=o&&o.claude!=null?o.claude/p.precio:1; base+=p.valor; conObj+=p.valor*f;
+    if(o&&o.claude!=null) rows.push(`<tr><td>${esc(p.ticker)}</td><td class="num">${fmtN(p.precio,2)}</td><td class="num">${o.am!=null?fmtN(o.am,2):"—"}</td><td class="num"><b>${fmtN(o.claude,2)}</b></td><td class="num ${f>=1?"gain":"loss"}">${sign(f-1)}${fmtP(f-1)}</td></tr>`); }
+  const d=(S.obj.fecha||"").split("-").reverse().join("/");
+  box.innerHTML=`<h2 style="margin:0 0 6px">Informe de objetivos a 12 meses</h2><div class="hint">Elaborado por Claude el ${esc(d)} con consensos públicos (StockAnalysis/S&amp;P Global, MarketBeat, Investing.com, TradingView). Toca una posición para ver las fuentes y el razonamiento.</div>
+   <div class="scroll" style="margin-top:10px"><table><tr><th>Activo</th><th>Hoy</th><th>Analistas</th><th>Claude</th><th>Potencial</th></tr>${rows.join("")}</table></div>
+   <div class="kv"><span>Tu cartera con mis objetivos</span><b class="${conObj>=base?"gain":"loss"}">${fmtE(conObj,0)} (${sign(conObj/base-1)}${fmtP(conObj/base-1)})</b><span>Valor actual</span><b>${fmtE(base,0)}</b></div>
+   <p class="hint" style="margin:0">${esc(S.obj.metodo||"")} Las cripto se mantienen a su precio actual en este cálculo.</p><p class="hint" style="margin:6px 0 0"><b>${esc(S.obj.aviso||"")}</b></p>`;
+}
 function renderPos(){
+  renderObj();
   const P=S.port; if(!P||!P.lista.length){ $("pList").innerHTML='<div class="empty">Sin posiciones.</div>'; return; }
   $("pList").innerHTML=P.lista.map(p=>{
     const cls=p.pg>=0?"gain":"loss", est=p.pr?`<span class="chip ${p.pr.estado==="actual"||p.pr.estado==="en directo"?"ok":(/antiguo|extracto/.test(p.pr.estado)?"old":"")}">${esc(p.pr.estado)} · ${esc(p.pr.cuando)}</span>`:(p.tipo==="Liquidez"?"":'<span class="chip old">sin precio automático</span>');
     const vol=S.vol[p.ticker], dec=p.precio<1?4:2;
     const rng = vol && p.tipo!=="Liquidez" ? `<div class="rng"><span>12 meses (rango probable)</span><span><b class="loss">${fmtN(p.precio*Math.exp(-vol),dec)}</b> – <b class="gain">${fmtN(p.precio*Math.exp(vol),dec)}</b> ${esc(p.divisa)}</span></div>` : "";
+    const o=objOf(p.ticker), pc=v=>(v/p.precio-1);
+    const obj = o && (o.claude!=null||o.am!=null) ? `<div class="rng"><span>Objetivo 12 meses</span><span>${o.am!=null?`Analistas <b>${fmtN(o.am,dec)}</b> · `:""}${o.claude!=null?`Claude <b class="${pc(o.claude)>=0?"gain":"loss"}">${fmtN(o.claude,dec)} ${esc(p.divisa)} (${sign(pc(o.claude))}${fmtP(pc(o.claude))})</b>`:""}</span></div>` : "";
+    const objD = o ? `<span style="grid-column:1/-1;color:var(--ink);font-size:13px;line-height:1.45">${(o.analistas||[]).map(a=>`${esc(a.fuente)}: <b class="num">${fmtN(a.media,2)}</b> (${a.n} analistas, ${fmtN(a.min,0)}–${fmtN(a.max,0)})`).join(" · ")}${o.analistas&&o.analistas.length?"<br>":""}<i>${esc(o.nota||"")}</i></span>` : "";
     const rngD = vol && p.tipo!=="Liquidez" ? `<span>Valor de tu posición en 12 meses</span><b class="num">${fmtE(p.valor*Math.exp(-vol),0)} – ${fmtE(p.valor*Math.exp(vol),0)}</b><span>Volatilidad del último año</span><b class="num">${fmtP(vol)}</b>` : "";
     return `<div class="pos" tabindex="0" data-t="${esc(p.ticker)}">
       <div class="row"><div class="left" style="display:flex;gap:10px;align-items:center">${avatar(p)}<div style="min-width:0"><div class="t">${esc(p.ticker)}</div><div class="n">${esc(p.nombre)}</div></div></div>
         <div style="text-align:right"><div class="num" style="font-weight:600">${fmtE(p.valor)}</div><div class="num ${cls}" style="font-size:13px">${p.tipo==="Liquidez"?"":sign(p.pg)+fmtE(p.pg,0)+" · "+sign(p.pgPct)+fmtP(p.pgPct)}</div></div></div>
       <div class="weightbar" title="Peso ${fmtP(p.peso)}"><span class="${p.tipo==="Acción"&&p.peso>0.1?"over":""}" style="width:${Math.min(100,p.peso*100*4).toFixed(1)}%"></span></div>
       <div class="row" style="font-size:12px;color:var(--muted)"><span>Peso ${fmtP(p.peso)}</span>${est}</div>
+      ${obj}
       ${rng}
       <div class="detail" hidden>
+        ${objD}
         ${rngD}
         <span>Cantidad</span><b class="num">${fmtN(p.qty,p.tipo==="Cripto"?6:4)}</b>
         <span>Precio actual</span><b class="num">${fmtN(p.precio,4)} ${esc(p.divisa)}</b>
