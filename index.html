@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Mi Cartera</title>
-<meta name="theme-color" content="#0f3b3a">
+<meta name="theme-color" content="#0b1f3a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Mi Cartera">
 <link rel="manifest" href="manifest.webmanifest">
@@ -15,21 +15,21 @@
 <style>
 /* Layout: una columna tipo app móvil, barra inferior fija con 5 pestañas */
 :root{
-  --bg:#f3f5f4; --surface:#ffffff; --ink:#122523; --muted:#5d6e6b; --line:#dfe6e4;
-  --brand:#0f3b3a; --brand-ink:#ffffff; --accent:#1f8a70;
-  --gain:#17804f; --loss:#c0392b; --warn:#b7791f; --chip:#e8efed;
+  --bg:#f3f5f9; --surface:#ffffff; --ink:#0f1b2d; --muted:#56627a; --line:#dde3ee;
+  --brand:#0b1f3a; --brand-ink:#ffffff; --accent:#1c3d6e;
+  --gain:#1f5fbf; --loss:#c0392b; --warn:#b7791f; --chip:#e7ecf5;
   --f-ui:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-num:"JetBrains Mono",ui-monospace,"SFMono-Regular",Consolas,monospace;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0c1615; --surface:#14211f; --ink:#e6efed; --muted:#93a8a4; --line:#24352f;
-  --brand:#0b2a29; --brand-ink:#e6efed; --accent:#3fbf98;
-  --gain:#43c785; --loss:#ef6b5b; --warn:#e3a94a; --chip:#1d2e2b; color-scheme:dark}}
+  --bg:#0a1220; --surface:#111c30; --ink:#e8edf5; --muted:#9aa8bf; --line:#22304a;
+  --brand:#0d2347; --brand-ink:#ffffff; --accent:#4a7bd0;
+  --gain:#7fb2ff; --loss:#ef6b5b; --warn:#e3a94a; --chip:#1a2740; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0c1615; --surface:#14211f; --ink:#e6efed; --muted:#93a8a4; --line:#24352f;
-  --brand:#0b2a29; --brand-ink:#e6efed; --accent:#3fbf98;
-  --gain:#43c785; --loss:#ef6b5b; --warn:#e3a94a; --chip:#1d2e2b; color-scheme:dark}
+  --bg:#0a1220; --surface:#111c30; --ink:#e8edf5; --muted:#9aa8bf; --line:#22304a;
+  --brand:#0d2347; --brand-ink:#ffffff; --accent:#4a7bd0;
+  --gain:#7fb2ff; --loss:#ef6b5b; --warn:#e3a94a; --chip:#1a2740; color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--f-ui);-webkit-font-smoothing:antialiased;
@@ -39,21 +39,21 @@ header.top{position:sticky;top:0;z-index:5;background:var(--brand);color:var(--b
   padding:calc(12px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px));
   display:flex;align-items:center;gap:12px}
 header.top h1{font-size:17px;margin:0;font-weight:800;letter-spacing:.2px;flex:1}
-header.top .sub{font-size:12px;opacity:.75;font-weight:500}
+header.top .sub{font-size:12px;opacity:.9;font-weight:700}
 .iconbtn{background:transparent;border:1px solid rgba(255,255,255,.25);color:inherit;border-radius:10px;width:38px;height:38px;display:grid;place-items:center;cursor:pointer}
 .iconbtn svg{width:20px;height:20px}
 main{max-width:640px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:14px}
 section[hidden]{display:none!important}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
-.hero{background:var(--brand);color:var(--brand-ink);border:0}
-.hero .label{opacity:.75;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
-.hero .big{font-size:34px;font-weight:600;margin:4px 0 2px}
+.hero{background:var(--brand);color:var(--brand-ink);border:0;font-weight:700}
+.hero .label{opacity:.9;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
+.hero .big{font-size:34px;font-weight:800;margin:4px 0 2px}
 .row{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
 .kpi{background:rgba(255,255,255,.08);border-radius:10px;padding:10px}
-.kpi .k{font-size:12px;opacity:.8}.kpi .v{font-size:17px;font-weight:600}
+.kpi .k{font-size:12px;opacity:.9;font-weight:700}.kpi .v{font-size:17px;font-weight:800}
 .gain{color:var(--gain)}.loss{color:var(--loss)}
-.hero .gain{color:#7ee2b0}.hero .loss{color:#ffb4a8}
+.hero .gain{color:#a9c8ff}.hero .loss{color:#ffb4a8}
 h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:4px 2px 0;font-weight:800}
 .bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--chip);margin:10px 0 8px}
 .bar span{display:block;height:100%}
@@ -107,6 +107,15 @@ th:first-child,td:first-child{text-align:left}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px}
 @keyframes s{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.scen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:2px 0 10px}
+.scen>div{background:var(--chip);border-radius:10px;padding:8px 6px;text-align:center;min-width:0}
+.scen .k{font-size:11px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.scen .v{font-size:18px;font-weight:800}
+.scen .e{font-size:12px;color:var(--muted);font-weight:600}
+#chart svg{width:100%;height:auto;display:block}
+.news{display:flex;flex-direction:column;gap:12px}
+.news a{color:var(--ink);text-decoration:none;font-weight:700}
+.news .m{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -150,10 +159,14 @@ th:first-child,td:first-child{text-align:left}
         <div class="kpi"><div class="k">Ganado vendiendo y en dividendos</div><div class="v num" id="hReal">—</div></div>
       </div>
     </div>
+    <h2>Escenarios a 12 meses</h2>
+    <div class="card"><div class="scen"><div><div class="k">Pesimista</div><div class="v num" id="scP">—</div><div class="e num" id="scPe"></div></div><div><div class="k">Actual</div><div class="v num" id="scA">—</div><div class="e num" id="scAe"></div></div><div><div class="k">Optimista</div><div class="v num" id="scO">—</div><div class="e num" id="scOe"></div></div></div><div id="chart"></div><p class="hint" id="scNota"></p></div>
     <h2>Reparto</h2>
     <div class="card"><div class="bar" id="hBar"></div><div class="legend" id="hLegend"></div></div>
     <h2>Avisos</h2>
     <div class="alerts" id="hAlerts"><div class="card empty">Sin datos todavía.</div></div>
+    <h2>Noticias de tus posiciones</h2>
+    <div class="card news" id="hNews"><div class="empty">Las noticias se cargan cada mañana.</div></div>
   </section>
 
   <!-- POSICIONES -->
@@ -284,6 +297,8 @@ async function loadAll(){
     S.ops=parseCSV(o.text); S.opsSha=o.sha; S.act=parseCSV(a.text); S.actSha=a.sha;
     S.precios={}; for(const r of parseCSV(p)){ if(num(r.precio) && r.estado!=="sin dato") S.precios[r.ticker]=r; }
     S.fx = num(S.precios.EURUSD?.precio) || 1.1;
+    const [h,nw]=await Promise.all([gh("data/historico.csv",{raw:true}).catch(()=>""), gh("data/noticias.json",{raw:true}).catch(()=>"")]);
+    S.hist=parseCSV(h); try{ S.news=nw?JSON.parse(nw):null; }catch(err){ S.news=null; }
     await loadLive();
     S.loaded=true; compute(); renderAll();
     $("sub").textContent="Actualizado "+new Date().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
@@ -397,7 +412,53 @@ $("hList").addEventListener("click",e=>{
   if(b.dataset.a==="yes"){ saveOps(S.ops.filter(x=>x.id!==id),"Borrar operación "+id).then(ok=>ok&&toast("Operación borrada")); }
 });
 $("hFiltro").addEventListener("input",renderHist);
-function renderAll(){ renderHome(); renderPos(); renderHist(); fillActivos(); }
+function renderAll(){ renderHome(); renderPos(); renderHist(); fillActivos(); try{ renderEsc(); }catch(e){ $("scNota").textContent="No se pudo dibujar el gráfico: "+e.message; } renderNews(); }
+
+/* ---------- escenarios y noticias ---------- */
+function serieCartera(){
+  const P=S.port; if(!P||!S.hist||!S.hist.length) return [];
+  const por={}; for(const r of S.hist){ const c=num(r.cierre); if(c) (por[r.ticker] ||= []).push([r.fecha,c]); }
+  const tick=new Set(P.lista.filter(p=>p.tipo!=="Cripto"&&p.tipo!=="Liquidez").map(p=>p.ticker));
+  const fechas=[...new Set(S.hist.filter(r=>tick.has(r.ticker)).map(r=>r.fecha))].sort();
+  if(fechas.length<20) return [];
+  const idx={};
+  const at=(t,f)=>{ const s=por[t]; if(!s) return null; let i=idx[t]||0; while(i+1<s.length && s[i+1][0]<=f) i++; idx[t]=i; return s[i][0]<=f? s[i][1] : null; };
+  return fechas.map(f=>{ const fx=at("EURUSD",f)||S.fx; let v=0;
+    for(const p of P.lista){ if(p.tipo==="Liquidez"){ v+=p.valor; continue; } const c=at(p.ticker,f); v+= c==null ? p.valor : p.qty*c/(p.divisa==="USD"?fx:1); }
+    return [f,v]; });
+}
+function renderEsc(){
+  const P=S.port, s=serieCartera(), box=$("chart");
+  if(!P||s.length<20){ $("scNota").textContent="Los escenarios aparecen cuando hay un año de precios guardados (se recalcula cada sábado)."; box.innerHTML=""; return; }
+  const r=[]; for(let i=1;i<s.length;i++) r.push(Math.log(s[i][1]/s[i-1][1]));
+  const m=r.reduce((a,b)=>a+b,0)/r.length, sd=Math.sqrt(r.reduce((a,b)=>a+(b-m)*(b-m),0)/(r.length-1)), vol=sd*Math.sqrt(252);
+  const V=P.total, pes=Math.exp(-vol)-1, opt=Math.exp(vol)-1;
+  $("scP").textContent=fmtP(pes); $("scPe").textContent=fmtE(V*(1+pes),0);
+  $("scA").textContent=fmtP(0); $("scAe").textContent=fmtE(V,0);
+  $("scO").textContent="+"+fmtP(opt); $("scOe").textContent=fmtE(V*(1+opt),0);
+  $("scP").className="v num loss"; $("scO").className="v num gain";
+  $("scNota").textContent="Rango calculado con cómo se ha movido tu cartera actual en el último año (volatilidad "+fmtP(vol)+" al año): aproximadamente 2 de cada 3 años el resultado a 12 meses quedaría entre el escenario pesimista y el optimista. No es una previsión. La línea de la izquierda es lo que habría valido tu cartera de hoy durante el último año.";
+  const W=600,H=230,L=48,R=12,T=12,B=26, n=s.length, fut=12, past=s.map(x=>x[1]);
+  const lo=Math.min(...past,V*Math.exp(-vol))*0.97, hi=Math.max(...past,V*Math.exp(vol))*1.03;
+  const y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo)), mid=L+(W-L-R)/2, xp=i=>L+(mid-L)*(i/(n-1)), xf=k=>mid+(W-R-mid)*(k/fut);
+  const line=past.map((v,i)=>(i?"L":"M")+xp(i).toFixed(1)+" "+y(v).toFixed(1)).join(" ");
+  const up=[],dn=[]; for(let k=0;k<=fut;k++){ const f=vol*Math.sqrt(k/12); up.push(xf(k).toFixed(1)+" "+y(V*Math.exp(f)).toFixed(1)); dn.push(xf(k).toFixed(1)+" "+y(V*Math.exp(-f)).toFixed(1)); }
+  const band="M"+up.join(" L")+" L"+dn.reverse().join(" L")+" Z";
+  const ticks=[lo,(lo+hi)/2,hi].map(v=>'<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v).toFixed(1)+'" y2="'+y(v).toFixed(1)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(y(v)+4).toFixed(1)+'" text-anchor="end" font-size="11" font-weight="700" fill="var(--muted)">'+(v/1000).toFixed(1).replace(".",",")+' k€</text>').join("");
+  const seg=(v2,col,w)=>'<path d="M'+xf(0).toFixed(1)+" "+y(V).toFixed(1)+" L"+xf(fut).toFixed(1)+" "+y(v2).toFixed(1)+'" stroke="'+col+'" stroke-width="'+w+'" stroke-dasharray="5 4" fill="none"/>';
+  box.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Valor de tu cartera en el último año y rango a 12 meses">'+ticks
+   +'<path d="'+band+'" fill="var(--accent)" fill-opacity=".14"/>'+seg(V*Math.exp(vol),"var(--gain)",2)+seg(V,"var(--muted)",1.5)+seg(V*Math.exp(-vol),"var(--loss)",2)
+   +'<path d="'+line+'" stroke="var(--accent)" stroke-width="2.4" fill="none"/><circle cx="'+xf(0).toFixed(1)+'" cy="'+y(V).toFixed(1)+'" r="4.5" fill="var(--accent)"/>'
+   +'<line x1="'+mid+'" x2="'+mid+'" y1="'+T+'" y2="'+(H-B)+'" stroke="var(--line)" stroke-dasharray="2 3"/>'
+   +'<text x="'+L+'" y="'+(H-8)+'" font-size="11" font-weight="700" fill="var(--muted)">hace 1 año</text><text x="'+mid+'" y="'+(H-8)+'" font-size="11" font-weight="700" fill="var(--muted)" text-anchor="middle">hoy</text><text x="'+(W-R)+'" y="'+(H-8)+'" font-size="11" font-weight="700" fill="var(--muted)" text-anchor="end">en 12 meses</text></svg>';
+}
+function renderNews(){
+  const box=$("hNews"), it=S.news&&S.news.items; if(!it){ box.innerHTML='<div class="empty">Las noticias se cargan cada mañana.</div>'; return; }
+  const held=new Set((S.port?S.port.lista:[]).map(p=>p.ticker)), rows=[];
+  for(const [t,arr] of Object.entries(it)){ if(!held.has(t)) continue; for(const nn of arr) rows.push(Object.assign({t},nn)); }
+  rows.sort((a,b)=>b.fecha.localeCompare(a.fecha));
+  box.innerHTML= rows.length ? rows.slice(0,12).map(nn=>'<div><span class="chip">'+esc(nn.t)+'</span> <a href="'+(/^https?:/.test(nn.url)?esc(nn.url):"#")+'" target="_blank" rel="noopener">'+esc(nn.titulo)+'</a><div class="m">'+esc(nn.fuente)+' · '+esc(nn.fecha.slice(8,10)+"/"+nn.fecha.slice(5,7)+" "+nn.fecha.slice(11))+' UTC</div></div>').join("")+'<div class="m">Titulares de '+esc(S.news.fuente||"")+' de los últimos 7 días (actualizado '+esc(S.news.generado||"")+'). Son contexto: no cambian los escenarios.</div>' : '<div class="empty">Sin noticias de tus posiciones en los últimos 7 días.</div>';
+}
 
 /* ---------- formulario ---------- */
 function fillActivos(){
