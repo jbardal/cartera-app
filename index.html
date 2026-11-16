@@ -121,9 +121,21 @@ th:first-child,td:first-child{text-align:left}
 .kv{display:grid;grid-template-columns:1fr auto;gap:6px 12px;font-size:14px;margin:10px 0 14px}
 .kv span{color:var(--muted)}.kv b{font-family:var(--f-num);font-weight:600;text-align:right}
 .sug{margin:6px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
-.sug li{display:flex;gap:10px;font-size:14px;line-height:1.45}
-.sug li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:7px}
-.sug li.w::before{background:var(--warn)}
+.sug li{display:flex;flex-direction:column;gap:6px;border-left:4px solid var(--accent);padding-left:8px}
+.sug li.w{border-left-color:var(--warn)}
+.sg-h{display:grid;grid-template-columns:1fr auto;gap:6px}
+.sg-tag,.sg-val,.sg-txt{background:var(--chip);border-radius:8px;padding:7px 10px}
+.sg-tag{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);align-self:stretch;display:flex;align-items:center}
+.sg-val{font-size:15px;font-weight:800;text-align:right;white-space:nowrap;display:flex;align-items:center;justify-content:flex-end}
+.sug li.w .sg-val{color:var(--warn)}
+.sg-txt{font-size:14px;line-height:1.45;background:transparent;border:1px solid var(--line)}
+input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-height:46px;max-width:100%}
+.grid2>label{min-width:0}
+.av{position:relative;overflow:hidden}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:5px;border-radius:50%}
+.av img.full{padding:0;object-fit:cover}
+.rng{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.rng b{font-family:var(--f-num);font-weight:700}
 .sugt{font-size:13px;font-weight:800;margin:14px 0 4px;color:var(--ink)}
 body{background-image:var(--pat);background-size:240px 240px}
 .hero{position:relative;overflow:hidden;isolation:isolate}
@@ -200,10 +212,8 @@ body{background-image:var(--pat);background-size:240px 240px}
           <label>Movimiento <select id="aTipo"><option value="Aportación">Añadir ahorro</option><option>Retirada</option><option value="Intereses">Intereses cobrados</option></select></label>
           <label>Importe (€) <input id="aImp" type="number" step="any" min="0" inputmode="decimal" placeholder="0,00"></label>
         </div>
-        <div class="grid2">
-          <label>Fecha <input id="aFecha" type="date"></label>
-          <label>Nota <input id="aNota" maxlength="120" placeholder="Opcional"></label>
-        </div>
+        <label>Fecha <input id="aFecha" type="date"></label>
+        <label>Nota <input id="aNota" maxlength="120" placeholder="Opcional"></label>
         <button class="btn" type="submit" id="aSave">Guardar movimiento</button>
       </form>
       <div id="aList" style="margin-top:8px"></div>
@@ -343,7 +353,7 @@ async function readFile(path){ const j=await gh(path); return { text: j.content?
 async function writeFile(path, text, sha, msg){ const j=await gh(path,{method:"PUT", body:{message:msg, content:b64e(text), sha, branch:"main"}}); return j.content.sha; }
 
 /* ---------- estado ---------- */
-const S = { ops:[], opsSha:null, act:[], actSha:null, precios:{}, fx:null, live:{}, loaded:false, port:null, editId:null, aho:[], ahoSha:null, esc:null };
+const S = { ops:[], opsSha:null, act:[], actSha:null, precios:{}, fx:null, live:{}, loaded:false, port:null, editId:null, aho:[], ahoSha:null, esc:null, img:{}, vol:{} };
 const AHOCOLS=["id","fecha","tipo","importe","nota"], TIN=0.02;
 
 async function loadAll(){
@@ -353,8 +363,9 @@ async function loadAll(){
     S.ops=parseCSV(o.text); S.opsSha=o.sha; S.act=parseCSV(a.text); S.actSha=a.sha;
     S.precios={}; for(const r of parseCSV(p)){ if(num(r.precio) && r.estado!=="sin dato") S.precios[r.ticker]=r; }
     S.fx = num(S.precios.EURUSD?.precio) || 1.1;
-    const [h,nw]=await Promise.all([gh("data/historico.csv",{raw:true}).catch(()=>""), gh("data/noticias.json",{raw:true}).catch(()=>"")]);
+    const [h,nw,rk]=await Promise.all([gh("data/historico.csv",{raw:true}).catch(()=>""), gh("data/noticias.json",{raw:true}).catch(()=>""), gh("data/riesgo.csv",{raw:true}).catch(()=>"")]);
     S.hist=parseCSV(h); try{ S.news=nw?JSON.parse(nw):null; }catch(err){ S.news=null; }
+    S.vol={}; for(const r of parseCSV(rk)){ const v=num(r.vol_anual); if(v) S.vol[r.ticker]=v; }
     try{ const ah=await readFile("data/ahorro.csv"); S.aho=parseCSV(ah.text); S.ahoSha=ah.sha; }catch(err){ S.aho=[]; S.ahoSha=null; }
     await loadLive();
     S.loaded=true; compute(); renderAll();
@@ -364,9 +375,19 @@ async function loadAll(){
 async function loadLive(){
   S.live={}; const ids=S.act.filter(a=>a.fuente==="coingecko"&&a.tipo!=="Candidato").map(a=>a.simbolo);
   if(!ids.length) return;
-  try{ const r=await fetch("https://api.coingecko.com/api/v3/simple/price?vs_currencies=eur&include_last_updated_at=true&ids="+ids.join(",")); if(!r.ok) return; const j=await r.json();
-    for(const a of S.act) if(a.fuente==="coingecko" && j[a.simbolo]?.eur) S.live[a.ticker]={precio:j[a.simbolo].eur, t:new Date(j[a.simbolo].last_updated_at*1000)};
+  try{ const r=await fetch("https://api.coingecko.com/api/v3/coins/markets?vs_currency=eur&ids="+ids.join(",")); if(!r.ok) return; const j=await r.json();
+    const by={}; for(const c of j) by[c.id]=c;
+    for(const a of S.act){ const c=by[a.simbolo]; if(a.fuente!=="coingecko"||!c) continue;
+      if(c.current_price) S.live[a.ticker]={precio:c.current_price, t:new Date(c.last_updated||Date.now())};
+      if(/^https:\/\//.test(c.image||"")) S.img[a.ticker]=c.image; }
   }catch(e){ /* sin conexión: se usan los precios guardados */ }
+}
+/* Logos: web de cada empresa (icono público vía Google); las cripto usan la imagen de CoinGecko */
+const WEB={RLMD:"relmada.com",NTLA:"intelliatx.com",NVDA:"nvidia.com",KGC:"kinross.com",EK5:"elecnor.com",MEQA:"merlinproperties.com",AIR1:"airbus.com",IDA1:"indracompany.com",EUNL:"ishares.com",EUNA:"ishares.com",IS3N:"ishares.com",XEON:"xtrackers.com"};
+function avatar(p){
+  const cls=({"Acción":"av-a","ETF":"av-e","Cripto":"av-c"})[p.tipo]||"av-l";
+  const src=S.img[p.ticker] || (WEB[p.ticker] ? "https://www.google.com/s2/favicons?sz=128&domain="+WEB[p.ticker] : "");
+  return `<span class="av ${cls}">${esc(p.ticker==="BTC"?"₿":p.ticker.slice(0,3))}${src?`<img src="${esc(src)}" alt="" loading="lazy" class="${S.img[p.ticker]?"full":""}" onerror="this.remove()">`:""}</span>`;
 }
 const actOf = t => S.act.find(a=>a.ticker===t);
 function priceOf(t){
@@ -420,12 +441,14 @@ const COLORS={"Acción":"var(--brand)","ETF":"var(--accent)","Cripto":"var(--war
 function renderHome(){
   const P=S.port; if(!P) return;
   $("hValor").textContent=fmtE(P.total,0);
-  const res=P.total-P.aportado, pct=P.aportado?res/P.aportado:0;
-  $("hRes").innerHTML=`<span class="${res>=0?"gain":"loss"}">${sign(res)}${fmtE(res,0)} (${sign(pct)}${fmtP(pct)})</span> desde 2023`;
+  // Igual que Revolut: suma de «Acciones y ETF ahora» + «Cripto ahora», sobre lo que costó lo que tienes
+  const res=P.plS+P.plC, base=P.lista.filter(p=>p.tipo!=="Liquidez").reduce((s,p)=>s+p.valor,0)-res, pct=base?res/base:0;
+  $("hRes").innerHTML=`<span class="${res>=0?"gain":"loss"}">${sign(res)}${fmtE(res,0)} (${sign(pct)}${fmtP(pct)})</span> en lo que tienes`;
   $("hAport").textContent=fmtE(P.aportado,0); $("hReal").textContent=fmtE(P.realizado+P.rentas,0);
   const pl=(id,v)=>{ $(id).textContent=sign(v)+fmtE(v,0); $(id).className="v num "+(v>=0?"gain":"loss"); };
   pl("hPlS",P.plS); pl("hPlC",P.plC);
-  $("hFx").textContent="«Ahora»: lo que ganas o pierdes con lo que tienes hoy, calculado como Revolut (lo de EE. UU. en dólares, pasado a euros al cambio de hoy). La subida o bajada del dólar desde que compraste suma aparte "+sign(P.fxEff)+fmtE(P.fxEff,0)+"; el resultado de arriba sí la incluye.";
+  const tot=P.total-P.aportado;
+  $("hFx").textContent="Calculado como Revolut: lo que ganas o pierdes con lo que tienes hoy (lo de EE. UU. en dólares, pasado a euros al cambio de hoy). Aparte: ventas y dividendos "+sign(P.realizado+P.rentas)+fmtE(P.realizado+P.rentas,0)+" y efecto del dólar "+sign(P.fxEff)+fmtE(P.fxEff,0)+". Balance total desde 2023 (valor actual − dinero aportado): "+sign(tot)+fmtE(tot,0)+".";
   const hm=d=>d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
   const lt=Object.values(S.live).map(x=>x.t).sort((a,b)=>b-a)[0];
   const ul=Object.entries(S.precios).filter(([t])=>["Acción","ETF"].includes(actOf(t)?.tipo)).map(([,p])=>p.fecha+" "+(p.hora_madrid||"")).sort().pop()||"";
@@ -445,12 +468,17 @@ function renderPos(){
   const P=S.port; if(!P||!P.lista.length){ $("pList").innerHTML='<div class="empty">Sin posiciones.</div>'; return; }
   $("pList").innerHTML=P.lista.map(p=>{
     const cls=p.pg>=0?"gain":"loss", est=p.pr?`<span class="chip ${p.pr.estado==="actual"||p.pr.estado==="en directo"?"ok":(/antiguo|extracto/.test(p.pr.estado)?"old":"")}">${esc(p.pr.estado)} · ${esc(p.pr.cuando)}</span>`:(p.tipo==="Liquidez"?"":'<span class="chip old">sin precio automático</span>');
+    const vol=S.vol[p.ticker], dec=p.precio<1?4:2;
+    const rng = vol && p.tipo!=="Liquidez" ? `<div class="rng"><span>12 meses (rango probable)</span><span><b class="loss">${fmtN(p.precio*Math.exp(-vol),dec)}</b> – <b class="gain">${fmtN(p.precio*Math.exp(vol),dec)}</b> ${esc(p.divisa)}</span></div>` : "";
+    const rngD = vol && p.tipo!=="Liquidez" ? `<span>Valor de tu posición en 12 meses</span><b class="num">${fmtE(p.valor*Math.exp(-vol),0)} – ${fmtE(p.valor*Math.exp(vol),0)}</b><span>Volatilidad del último año</span><b class="num">${fmtP(vol)}</b>` : "";
     return `<div class="pos" tabindex="0" data-t="${esc(p.ticker)}">
-      <div class="row"><div class="left" style="display:flex;gap:10px;align-items:center"><span class="av ${({"Acción":"av-a","ETF":"av-e","Cripto":"av-c"})[p.tipo]||"av-l"}">${esc(p.ticker==="BTC"?"₿":p.ticker.slice(0,3))}</span><div style="min-width:0"><div class="t">${esc(p.ticker)}</div><div class="n">${esc(p.nombre)}</div></div></div>
+      <div class="row"><div class="left" style="display:flex;gap:10px;align-items:center">${avatar(p)}<div style="min-width:0"><div class="t">${esc(p.ticker)}</div><div class="n">${esc(p.nombre)}</div></div></div>
         <div style="text-align:right"><div class="num" style="font-weight:600">${fmtE(p.valor)}</div><div class="num ${cls}" style="font-size:13px">${p.tipo==="Liquidez"?"":sign(p.pg)+fmtE(p.pg,0)+" · "+sign(p.pgPct)+fmtP(p.pgPct)}</div></div></div>
       <div class="weightbar" title="Peso ${fmtP(p.peso)}"><span class="${p.tipo==="Acción"&&p.peso>0.1?"over":""}" style="width:${Math.min(100,p.peso*100*4).toFixed(1)}%"></span></div>
       <div class="row" style="font-size:12px;color:var(--muted)"><span>Peso ${fmtP(p.peso)}</span>${est}</div>
+      ${rng}
       <div class="detail" hidden>
+        ${rngD}
         <span>Cantidad</span><b class="num">${fmtN(p.qty,p.tipo==="Cripto"?6:4)}</b>
         <span>Precio actual</span><b class="num">${fmtN(p.precio,4)} ${esc(p.divisa)}</b>
         <span>Precio medio de compra</span><b class="num">${fmtN(p.medio,4)} ${esc(p.divisa)}</b>
@@ -529,26 +557,27 @@ $("aList").addEventListener("click",e=>{
 /* ---------- sugerencias (reglas fijas, sin datos de pago) ---------- */
 function renderSug(){
   const P=S.port, box=$("scSug"); if(!P||!P.lista.length){ box.innerHTML='<li>Conecta la app para ver sugerencias.</li>'; return; }
-  const A=calcAhorro(), tot=P.total+A.total, out=[], add=(t,w)=>out.push(`<li class="${w?"w":""}">${t}</li>`);
+  // Cada sugerencia: etiqueta, cifra y comentario, cada uno en su recuadro
+  const A=calcAhorro(), tot=P.total+A.total, out=[], add=(tag,val,txt,w)=>out.push(`<li class="${w?"w":""}"><div class="sg-h"><span class="sg-tag">${tag}</span><span class="sg-val num">${val}</span></div><div class="sg-txt">${txt}</div></li>`);
   const por={}; P.lista.forEach(p=>por[p.tipo]=(por[p.tipo]||0)+p.peso);
   const E=S.esc;
   if(E){ const perd=-E.V*E.pes;
-    if(E.pes< -0.20) add(`En el escenario pesimista la cartera caería un <b>${fmtP(-E.pes)}</b>, más que el 20 % que dijiste tolerar. Para acercar el riesgo a tu perfil, la vía habitual es dar más peso a fondos diversificados y menos a lo más volátil.`,1);
-    else add(`El escenario pesimista (${fmtP(E.pes)}) está dentro de tu límite de caída del 20 %.`);
-    if(tot>0) add(`En ese escenario pesimista perderías unos <b>${fmtE(perd,0)}</b>, el ${fmtP(perd/tot)} de todo tu ahorro (inversiones + cuenta remunerada).`); }
+    if(E.pes< -0.20) add("Escenario pesimista",fmtP(E.pes),"Caería más que el 20 % que dijiste tolerar. Para acercar el riesgo a tu perfil, la vía habitual es dar más peso a fondos diversificados y menos a lo más volátil.",1);
+    else add("Escenario pesimista",fmtP(E.pes),"Dentro de tu límite de caída del 20 %.");
+    if(tot>0) add("Pérdida posible",fmtE(-perd,0),`En el escenario pesimista: el ${fmtP(perd/tot)} de todo tu ahorro (inversiones + cuenta remunerada).`); }
   const acc=P.lista.filter(p=>p.tipo==="Acción").sort((a,b)=>b.peso-a.peso);
-  if(acc[0]&&acc[0].peso>0.10) add(`<b>${esc(acc[0].ticker)}</b> pesa ${fmtP(acc[0].peso)} de la cartera. Una regla prudente es que ninguna empresa supere el 10 %: si una sola cae mucho, no debería arrastrar toda la cartera.`,1);
+  if(acc[0]&&acc[0].peso>0.10) add("Concentración · "+esc(acc[0].ticker),fmtP(acc[0].peso),"Una regla prudente es que ninguna empresa supere el 10 % de la cartera: si una sola cae mucho, no debería arrastrar al resto.",1);
   const cr=por["Cripto"]||0;
-  if(cr>0.05) add(`Cripto pesa <b>${fmtP(cr)}</b>, por encima del 5 % de referencia para un perfil moderado. Es la parte más volátil: cada nueva compra en cripto sube ese peso.`,1);
-  else if(cr>0) add(`Cripto pesa ${fmtP(cr)}, dentro del 5 % de referencia.`);
+  if(cr>0.05) add("Peso en cripto",fmtP(cr),"Por encima del 5 % de referencia para un perfil moderado. Es la parte más volátil: cada nueva compra en cripto sube ese peso.",1);
+  else if(cr>0) add("Peso en cripto",fmtP(cr),"Dentro del 5 % de referencia.");
   const etf=por["ETF"]||0;
-  if(etf<0.5) add(`Solo el <b>${fmtP(etf)}</b> está en fondos diversificados. Con tu perfil, lo habitual es que un fondo indexado global (como el EUNL que ya tienes) sea el núcleo, y las acciones individuales que te gustan, la parte satélite.`);
+  if(etf<0.5) add("Fondos diversificados",fmtP(etf),"Con tu perfil, lo habitual es que un fondo indexado global (como el EUNL que ya tienes) sea el núcleo, y las acciones individuales que te gustan, la parte satélite.");
   const mal=P.lista.filter(p=>p.tipo!=="Liquidez"&&p.pgPct!=null&&p.pgPct< -0.5);
-  if(mal.length) add(`${mal.map(p=>esc(p.ticker)).join(", ")} ${mal.length>1?"pierden":"pierde"} más del 50 %. Antes de comprar más para «promediar», revisa si el motivo por el que entraste sigue en pie. Las pérdidas realizadas pueden compensar ganancias (en España hasta 4 años); con tu residencia entre países, confírmalo con un asesor.`);
-  if(new Date()<new Date("2027-03-01")) add(`Desde enero de 2027 podrás aportar unos 1.000 € al mes. Repartir esa aportación de forma periódica (siempre el mismo día y con un reparto fijo) reduce el riesgo de entrar en mal momento y te ayuda a corregir los pesos sin vender.`);
-  if(A.saldo>0) add(`La cuenta remunerada rinde unos ${fmtE(A.saldo*TIN,0)} al año antes de impuestos (tributan como rendimientos del capital). Si es tu colchón de 5–6 meses de gastos, mantenlo ahí; lo que lo supere y no vayas a necesitar en años puede ir entrando poco a poco en tu plan de inversión.`);
+  if(mal.length) add("Pérdidas grandes",mal.length+(mal.length>1?" activos":" activo"),`${mal.map(p=>esc(p.ticker)).join(", ")} ${mal.length>1?"pierden":"pierde"} más del 50 %. Antes de comprar más para «promediar», revisa si el motivo por el que entraste sigue en pie. Las pérdidas realizadas pueden compensar ganancias (en España hasta 4 años); con tu residencia entre países, confírmalo con un asesor.`);
+  if(new Date()<new Date("2027-03-01")) add("Aportación mensual","1.000 €","Desde enero de 2027. Repartirla de forma periódica (siempre el mismo día y con un reparto fijo) reduce el riesgo de entrar en mal momento y te ayuda a corregir los pesos sin vender.");
+  if(A.saldo>0) add("Cuenta remunerada",fmtE(A.saldo*TIN,0)+"/año","Antes de impuestos (tributan como rendimientos del capital). Si es tu colchón de 5–6 meses de gastos, mantenlo ahí; lo que lo supere y no vayas a necesitar en años puede ir entrando poco a poco en tu plan de inversión.");
   const old=P.lista.filter(p=>p.pr&&/antiguo|extracto/.test(p.pr.estado));
-  if(old.length) add(`${old.length} precios no son de hoy: los cálculos de arriba usan su último dato.`,1);
+  if(old.length) add("Precios antiguos",String(old.length),"No son de hoy: los cálculos usan su último dato.",1);
   box.innerHTML=out.join("");
 }
 
