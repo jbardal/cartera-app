@@ -124,6 +124,14 @@ th:first-child,td:first-child{text-align:left}
 .sug li::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-top:7px}
 .sug li.w::before{background:var(--warn)}
 .sugt{font-size:13px;font-weight:800;margin:14px 0 4px;color:var(--ink)}
+body{background-image:var(--pat);background-size:240px 240px}
+.hero{position:relative;overflow:hidden;isolation:isolate}
+.hero::after{content:"";position:absolute;right:-26px;top:-30px;width:190px;height:190px;background:var(--coins) center/contain no-repeat;z-index:-1;opacity:.5;pointer-events:none}
+.hero.tot::after{width:220px;height:220px;opacity:.6}
+.av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font:800 12px var(--f-ui);color:#fff;flex:none;box-shadow:inset 0 0 0 3px rgba(255,255,255,.25)}
+.av-a{background:linear-gradient(135deg,#1c3d6e,#0b1f3a)}.av-e{background:linear-gradient(135deg,#4a7bd0,#1c3d6e)}
+.av-c{background:linear-gradient(135deg,#ffd76a,#c8901e);color:#5a3d06}.av-l{background:linear-gradient(135deg,#9aa8bf,#56627a)}
+.hero .fxn{font-size:12px;opacity:.9;margin-top:10px;font-weight:600;line-height:1.4}
 </style>
 </head>
 <body>
@@ -173,7 +181,10 @@ th:first-child,td:first-child{text-align:left}
       <div class="kpis">
         <div class="kpi"><div class="k">Aportado neto</div><div class="v num" id="hAport">—</div></div>
         <div class="kpi"><div class="k">Ganado vendiendo y en dividendos</div><div class="v num" id="hReal">—</div></div>
+        <div class="kpi"><div class="k">Acciones y ETF ahora</div><div class="v num" id="hPlS">—</div></div>
+        <div class="kpi"><div class="k">Cripto ahora</div><div class="v num" id="hPlC">—</div></div>
       </div>
+      <div class="fxn" id="hFx"></div>
     </div>
     <h2>Cuenta remunerada</h2>
     <div class="card">
@@ -289,6 +300,12 @@ th:first-child,td:first-child{text-align:left}
 
 <script>
 "use strict";
+/* ---------- decoración: monedas y gráfico de fondo ---------- */
+(function(){
+  const u=s=>'url("data:image/svg+xml,'+encodeURIComponent(s)+'")', r=document.documentElement.style;
+  r.setProperty("--pat",u('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><g fill="none" stroke="#4a7bd0" stroke-opacity=".16" stroke-width="2" stroke-linejoin="round"><circle cx="40" cy="44" r="20"/><circle cx="40" cy="44" r="14"/><circle cx="182" cy="118" r="24"/><circle cx="182" cy="118" r="17"/><circle cx="76" cy="196" r="13"/><path d="M0 160 L36 138 L62 150 L100 106 L128 118 L160 72 L200 60 L240 30"/><path d="M118 200v-26M114 180h8v12h-8zM146 210v-34M142 184h8v16h-8z"/></g><g fill="#4a7bd0" fill-opacity=".22" font-family="Arial,sans-serif" font-weight="700" text-anchor="middle"><text x="40" y="51" font-size="18">€</text><text x="182" y="127" font-size="24">₿</text><text x="76" y="201" font-size="13">$</text></g></svg>'));
+  r.setProperty("--coins",u('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset="1" stop-color="#c8901e"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b5d2ff"/><stop offset="1" stop-color="#3d6fc4"/></linearGradient></defs><path d="M8 186 L46 150 L70 162 L108 118 L134 128 L192 60" fill="none" stroke="#a9c8ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="128" cy="76" r="44" fill="url(#g)"/><circle cx="128" cy="76" r="35" fill="none" stroke="#fff3c4" stroke-opacity=".8" stroke-width="3"/><text x="128" y="92" font-family="Arial,sans-serif" font-size="44" font-weight="700" text-anchor="middle" fill="#7a5410">₿</text><circle cx="62" cy="128" r="30" fill="url(#b)"/><circle cx="62" cy="128" r="23" fill="none" stroke="#e3eeff" stroke-opacity=".8" stroke-width="2.5"/><text x="62" y="139" font-family="Arial,sans-serif" font-size="30" font-weight="700" text-anchor="middle" fill="#0b1f3a">€</text><circle cx="162" cy="150" r="22" fill="url(#g)"/><circle cx="162" cy="150" r="16" fill="none" stroke="#fff3c4" stroke-opacity=".8" stroke-width="2"/><text x="162" y="158" font-family="Arial,sans-serif" font-size="22" font-weight="700" text-anchor="middle" fill="#7a5410">$</text></svg>'));
+})();
 /* ---------- utilidades ---------- */
 const $ = id => document.getElementById(id);
 const fmtE = (v,d=2) => (v==null||isNaN(v)) ? "—" : v.toLocaleString("es-ES",{style:"currency",currency:"EUR",minimumFractionDigits:d,maximumFractionDigits:d});
@@ -365,12 +382,12 @@ function compute(upTo){
     if(upTo && o.fecha>upTo) break;
     const q=num(o.cantidad)||0, imp=num(o.importe)||0, eur=num(o.importe_eur)??imp, t=o.ticker;
     aportado += num(o.flujo_eur)||0;
-    const P = t ? (pos[t] ||= {ticker:t, qty:0, cost:0, costEur:0, divisa:o.divisa||actOf(t)?.divisa||"EUR", cuenta:o.cuenta, real:0, n:0}) : null;
+    const P = t ? (pos[t] ||= {ticker:t, qty:0, cost:0, costEur:0, gross:0, divisa:o.divisa||actOf(t)?.divisa||"EUR", cuenta:o.cuenta, real:0, n:0}) : null;
     if(P) P.n++;
     switch(o.tipo){
-      case "Compra": P.qty+=q; P.cost+=imp; P.costEur+=eur; if(o.divisa) P.divisa=o.divisa; if(cash[o.cuenta]!=null && !(num(o.flujo_eur))) cash[o.cuenta]-=imp; break;
+      case "Compra": P.qty+=q; P.cost+=imp; P.costEur+=eur; P.gross+= num(o.precio)!=null ? q*num(o.precio) : imp; if(o.divisa) P.divisa=o.divisa; if(cash[o.cuenta]!=null && !(num(o.flujo_eur))) cash[o.cuenta]-=imp; break;
       case "Venta": { const f=P.qty>0?Math.min(1,q/P.qty):0; const ce=P.costEur*f; const g=eur-ce; P.real+=g; realizado+=g; events.push({fecha:o.fecha,tipo:"Venta",ticker:t,eur:g});
-        P.cost-=P.cost*f; P.costEur-=ce; P.qty-=q; if(P.qty<1e-9){P.qty=0;P.cost=0;P.costEur=0;} if(cash[o.cuenta]!=null && !(num(o.flujo_eur))) cash[o.cuenta]+=imp; break; }
+        P.cost-=P.cost*f; P.costEur-=ce; P.gross-=P.gross*f; P.qty-=q; if(P.qty<1e-9){P.qty=0;P.cost=0;P.costEur=0;P.gross=0;} if(cash[o.cuenta]!=null && !(num(o.flujo_eur))) cash[o.cuenta]+=imp; break; }
       case "Staking": case "Recompensa": case "Ajuste": P.qty+=q; break;
       case "Dividendo": case "Devolución de capital": rentas+=eur; events.push({fecha:o.fecha,tipo:o.tipo,ticker:t,eur}); if(cash[o.cuenta]!=null) cash[o.cuenta]+=imp; break;
       case "Ingreso": if(cash[o.cuenta]!=null) cash[o.cuenta]+=imp; break;
@@ -382,12 +399,18 @@ function compute(upTo){
     const a=actOf(P.ticker), pr=priceOf(P.ticker), fx=(P.divisa==="USD")?S.fx:1;
     const precio = pr?.precio ?? (P.cost/P.qty);
     const valor = P.qty*precio/fx;
-    lista.push({...P, nombre:a?.nombre||P.ticker, tipo:a?.tipo||"Acción", precio, pr, valor, pg:valor-P.costEur, pgPct:P.costEur?valor/P.costEur-1:null, medio:P.cost/P.qty});
+    const tipo=a?.tipo||(P.cuenta==="Cripto"?"Cripto":"Acción");
+    // Como Revolut: acciones en su divisa (precio de compra sin comisión) y pasadas a euros al cambio de hoy
+    const pgRev = tipo==="Cripto" ? valor-P.costEur : (P.qty*precio-P.gross)/fx;
+    lista.push({...P, nombre:a?.nombre||P.ticker, tipo, precio, pr, valor, pg:valor-P.costEur, pgRev, pgPct:P.costEur?valor/P.costEur-1:null, medio:P.cost/P.qty});
     total+=valor; }
   const usd=cash["Valores USD"]; if(Math.abs(usd)>0.005){ lista.push({ticker:"USD",nombre:"Efectivo en dólares",tipo:"Liquidez",qty:usd,precio:1,divisa:"USD",valor:usd/S.fx,costEur:usd/S.fx,pg:0,pgPct:0,medio:1,n:0}); total+=usd/S.fx; }
   const eurc=cash["Valores EUR"]; if(Math.abs(eurc)>0.005){ lista.push({ticker:"EUR",nombre:"Efectivo en euros",tipo:"Liquidez",qty:eurc,precio:1,divisa:"EUR",valor:eurc,costEur:eurc,pg:0,pgPct:0,medio:1,n:0}); total+=eurc; }
   lista.forEach(p=>p.peso=total?p.valor/total:0); lista.sort((a,b)=>b.valor-a.valor);
-  const res={lista,total,aportado,realizado,rentas,events};
+  const bolsa=p=>p.tipo==="Acción"||p.tipo==="ETF";
+  const plS=lista.filter(bolsa).reduce((s,p)=>s+p.pgRev,0), plC=lista.filter(p=>p.tipo==="Cripto").reduce((s,p)=>s+p.pgRev,0);
+  const fxEff=lista.filter(bolsa).reduce((s,p)=>s+p.pg-p.pgRev,0);
+  const res={lista,total,aportado,realizado,rentas,events,plS,plC,fxEff};
   if(!upTo) S.port=res; return res;
 }
 
@@ -399,6 +422,9 @@ function renderHome(){
   const res=P.total-P.aportado, pct=P.aportado?res/P.aportado:0;
   $("hRes").innerHTML=`<span class="${res>=0?"gain":"loss"}">${sign(res)}${fmtE(res,0)} (${sign(pct)}${fmtP(pct)})</span> desde 2023`;
   $("hAport").textContent=fmtE(P.aportado,0); $("hReal").textContent=fmtE(P.realizado+P.rentas,0);
+  const pl=(id,v)=>{ $(id).textContent=sign(v)+fmtE(v,0); $(id).className="v num "+(v>=0?"gain":"loss"); };
+  pl("hPlS",P.plS); pl("hPlC",P.plC);
+  $("hFx").textContent="«Ahora»: lo que ganas o pierdes con lo que tienes hoy, calculado como Revolut (lo de EE. UU. en dólares, pasado a euros al cambio de hoy). La subida o bajada del dólar desde que compraste suma aparte "+sign(P.fxEff)+fmtE(P.fxEff,0)+"; el resultado de arriba sí la incluye.";
   const hm=d=>d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});
   const lt=Object.values(S.live).map(x=>x.t).sort((a,b)=>b-a)[0];
   const ul=Object.entries(S.precios).filter(([t])=>["Acción","ETF"].includes(actOf(t)?.tipo)).map(([,p])=>p.fecha+" "+(p.hora_madrid||"")).sort().pop()||"";
@@ -419,7 +445,7 @@ function renderPos(){
   $("pList").innerHTML=P.lista.map(p=>{
     const cls=p.pg>=0?"gain":"loss", est=p.pr?`<span class="chip ${p.pr.estado==="actual"||p.pr.estado==="en directo"?"ok":(/antiguo|extracto/.test(p.pr.estado)?"old":"")}">${esc(p.pr.estado)} · ${esc(p.pr.cuando)}</span>`:(p.tipo==="Liquidez"?"":'<span class="chip old">sin precio automático</span>');
     return `<div class="pos" tabindex="0" data-t="${esc(p.ticker)}">
-      <div class="row"><div class="left"><div class="t">${esc(p.ticker)}</div><div class="n">${esc(p.nombre)}</div></div>
+      <div class="row"><div class="left" style="display:flex;gap:10px;align-items:center"><span class="av ${({"Acción":"av-a","ETF":"av-e","Cripto":"av-c"})[p.tipo]||"av-l"}">${esc(p.ticker==="BTC"?"₿":p.ticker.slice(0,3))}</span><div style="min-width:0"><div class="t">${esc(p.ticker)}</div><div class="n">${esc(p.nombre)}</div></div></div>
         <div style="text-align:right"><div class="num" style="font-weight:600">${fmtE(p.valor)}</div><div class="num ${cls}" style="font-size:13px">${p.tipo==="Liquidez"?"":sign(p.pg)+fmtE(p.pg,0)+" · "+sign(p.pgPct)+fmtP(p.pgPct)}</div></div></div>
       <div class="weightbar" title="Peso ${fmtP(p.peso)}"><span class="${p.tipo==="Acción"&&p.peso>0.1?"over":""}" style="width:${Math.min(100,p.peso*100*4).toFixed(1)}%"></span></div>
       <div class="row" style="font-size:12px;color:var(--muted)"><span>Peso ${fmtP(p.peso)}</span>${est}</div>
@@ -541,7 +567,7 @@ function serieCartera(){
 function renderEsc(){
   const P=S.port, s=serieCartera(), box=$("chart");
   S.esc=null;
-  if(!P||s.length<20){ $("scNota").textContent="Los escenarios aparecen cuando hay un año de precios guardados (se recalcula cada sábado)."; box.innerHTML=""; return; }
+  if(!P||s.length<20){ $("scNota").textContent="Los escenarios aparecen cuando hay un año de precios guardados (se recalcula cada día)."; box.innerHTML=""; return; }
   const r=[]; for(let i=1;i<s.length;i++) r.push(Math.log(s[i][1]/s[i-1][1]));
   const m=r.reduce((a,b)=>a+b,0)/r.length, sd=Math.sqrt(r.reduce((a,b)=>a+(b-m)*(b-m),0)/(r.length-1)), vol=sd*Math.sqrt(252);
   const V=P.total, pes=Math.exp(-vol)-1, opt=Math.exp(vol)-1; S.esc={vol,pes,opt,V};
