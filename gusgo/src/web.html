@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GUSGO · Churrería de obrador</title>
+<meta name="description" content="Churros de lazo en tandas cortas, chocolate negro al 70 % y café de especialidad. Una mesa que se reserva para la merienda.">
+<meta name="theme-color" content="#14301D">
+<link rel="icon" href="{{seal_dark}}">
+<style>
+{{FONTS}}
+:root{
+  --ink:#14301D; --green:#1E3F2A; --green2:#244533; --cream:#F7F2E4; --ivory:#EFE7D6;
+  --gold:#D9AE3B; --gold-soft:#E8CB7A; --char:#1B1F1D;
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Manrope',system-ui,sans-serif;
+  --ease:cubic-bezier(.2,.7,.1,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font:400 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:var(--ink)}
+.wrap{width:min(1240px,100% - 48px);margin-inline:auto}
+.eyebrow{font:500 11px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase}
+.serif{font-family:var(--serif)}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1;letter-spacing:-.01em}
+em{font-style:italic}
+/* grano de película */
+body::after{content:"";position:fixed;inset:-50%;pointer-events:none;z-index:90;opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1s steps(4) infinite}
+@keyframes grain{25%{transform:translate(-3%,2%)}50%{transform:translate(2%,-3%)}75%{transform:translate(-1%,3%)}}
+
+/* ── Telón de entrada ── */
+.curtain{position:fixed;inset:0;z-index:100;background:var(--ink);display:grid;place-items:center;
+  animation:lift 1s var(--ease) 1.5s forwards}
+.curtain img{width:110px;animation:spin 1.6s var(--ease) both}
+.curtain span{position:absolute;bottom:40px;color:var(--ivory);opacity:.6}
+@keyframes spin{from{transform:rotate(-200deg) scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes lift{to{transform:translateY(-100%)}}
+
+/* ── Navegación ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;transition:background .5s,padding .5s;padding:26px 0;color:var(--ivory)}
+nav.solid{background:rgba(20,48,29,.92);backdrop-filter:blur(10px);padding:14px 0}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;font:500 15px/1 var(--sans);letter-spacing:.42em}
+.brand img{width:34px}
+nav ul{display:flex;gap:34px;list-style:none}
+nav ul a{position:relative;opacity:.85}
+nav ul a::after{content:"";position:absolute;left:0;bottom:-6px;height:1px;width:100%;background:currentColor;transform:scaleX(0);transform-origin:right;transition:transform .5s var(--ease)}
+nav ul a:hover::after{transform:scaleX(1);transform-origin:left}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:15px 26px;border:1px solid currentColor;border-radius:100px;
+  font:500 12px/1 var(--sans);letter-spacing:.2em;text-transform:uppercase;transition:all .4s var(--ease)}
+.btn:hover{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.btn.fill{background:var(--gold);border-color:var(--gold);color:var(--ink)}
+.btn.fill:hover{background:var(--ivory);border-color:var(--ivory)}
+.btn i{font-style:normal;transition:transform .4s var(--ease)}.btn:hover i{transform:translateX(4px)}
+
+/* ── Hero ── */
+.hero{position:relative;height:100svh;min-height:640px;overflow:hidden;color:var(--ivory)}
+.hero-media{position:absolute;inset:0;animation:kb 18s ease-out both}
+.hero-media img{width:100%;height:100%;object-fit:cover;object-position:60% 50%}
+@keyframes kb{from{transform:scale(1.14)}to{transform:scale(1.02)}}
+.hero::before{content:"";position:absolute;inset:0;z-index:1;
+  background:linear-gradient(90deg,rgba(12,30,18,.86) 0%,rgba(12,30,18,.55) 38%,rgba(12,30,18,0) 66%),linear-gradient(0deg,rgba(12,30,18,.7),transparent 40%)}
+.steam{position:absolute;width:var(--w,220px);pointer-events:none;mix-blend-mode:screen;opacity:.85}
+.steam .w{animation:rise 6s ease-in-out infinite;transform-origin:50% 100%}
+.steam .w2{animation-delay:-2s;animation-duration:7s}.steam .w3{animation-delay:-4s;animation-duration:8s}
+@keyframes rise{0%{transform:translateY(40px) scaleY(.7);opacity:0}30%{opacity:1}100%{transform:translateY(-60px) scaleY(1.15);opacity:0}}
+.hero .steam{z-index:2;left:84.5%;top:-6%;transform:translateX(-50%);--w:15vw}
+.hero-copy{position:relative;z-index:3;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:12vh}
+.hero h1{font-size:clamp(64px,10.5vw,168px);font-weight:400;line-height:.88;max-width:9ch}
+.hero h1 em{color:var(--gold-soft)}
+.hero p{max-width:440px;margin:30px 0 40px;font-size:18px;opacity:.88}
+.hero .ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero .eyebrow{color:var(--gold-soft);margin-bottom:28px}
+.scroll-cue{position:absolute;z-index:3;right:48px;bottom:48px;writing-mode:vertical-rl;display:flex;align-items:center;gap:14px}
+.scroll-cue::after{content:"";width:1px;height:70px;background:linear-gradient(var(--ivory),transparent);animation:cue 2.2s ease-in-out infinite}
+@keyframes cue{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+.line{display:block;overflow:hidden}.line>span{display:block;animation:up 1.2s var(--ease) both}
+.line:nth-child(2)>span{animation-delay:.12s}
+.hero .line>span{animation-delay:1.9s}.hero .line:nth-child(2)>span{animation-delay:2.05s}
+@keyframes up{from{transform:translateY(105%)}}
+.fade-in{animation:fi 1.2s var(--ease) 2.3s both}@keyframes fi{from{opacity:0;transform:translateY(20px)}}
+
+/* ── Cinta ── */
+.ribbon{background:var(--gold);color:var(--ink);overflow:hidden;padding:18px 0;white-space:nowrap}
+.ribbon div{display:inline-flex;gap:48px;animation:marq 40s linear infinite;font:italic 500 26px/1 var(--serif)}
+.ribbon b{font-weight:400;font-style:normal;opacity:.6}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ── Secciones ── */
+section{position:relative}
+.pad{padding:clamp(90px,13vw,180px) 0}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
+.reveal.on{opacity:1;transform:none}
+.d1{transition-delay:.12s}.d2{transition-delay:.24s}.d3{transition-delay:.36s}
+
+.manifesto{background:var(--cream)}
+.manifesto .grid{display:grid;grid-template-columns:1fr 1.25fr;gap:clamp(40px,7vw,120px);align-items:center}
+.manifesto h2{font-size:clamp(46px,6.2vw,92px)}
+.manifesto h2 em{color:var(--green2)}
+.manifesto p{font-size:19px;max-width:520px;margin-top:28px;color:#2c4535}
+.sig{display:flex;align-items:center;gap:16px;margin-top:40px}
+.sig img{width:52px}
+.sig span{font:italic 22px var(--serif)}
+.figure{position:relative}
+.figure .frame{overflow:hidden;border-radius:2px}
+.figure .frame img{width:100%;aspect-ratio:4/5;object-fit:cover;transform:scale(1.08);transition:transform 2s var(--ease)}
+.reveal.on .frame img{transform:scale(1)}
+.figure .tag{position:absolute;left:-28px;bottom:42px;background:var(--ink);color:var(--ivory);padding:22px 26px;max-width:250px}
+.figure .tag b{display:block;font:500 46px/1 var(--serif);color:var(--gold-soft)}
+.figure .tag small{font-size:13px;opacity:.8}
+
+/* Pilares */
+.pillars{background:var(--ink);color:var(--ivory)}
+.pillars header{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:80px;flex-wrap:wrap}
+.pillars h2{font-size:clamp(44px,5.5vw,84px);max-width:13ch}
+.pillars h2 em{color:var(--gold-soft)}
+.pillars header p{max-width:380px;opacity:.75}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(239,231,214,.2)}
+.pill{padding:40px 30px 10px 0;border-right:1px solid rgba(239,231,214,.12);padding-left:30px}
+.pill:first-child{padding-left:0}.pill:last-child{border:0}
+.pill .num{font:400 76px/1 var(--serif);color:var(--gold-soft)}
+.pill .num sup{font-size:.4em;vertical-align:top;margin-left:4px}
+.pill h3{font-size:28px;margin:22px 0 12px}
+.pill p{font-size:15px;opacity:.72}
+
+/* Vapor */
+.steamsec{background:#0f2416;color:var(--ivory);overflow:hidden}
+.steamsec .grid{display:grid;grid-template-columns:1.1fr 1fr;align-items:center;min-height:100svh}
+.cupwrap{position:relative;height:100%;min-height:600px}
+.cupwrap>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:58% 60%}
+.cupwrap::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 60%,#0f2416),linear-gradient(0deg,transparent 70%,rgba(15,36,22,.6))}
+.cupwrap .steam{left:58%;top:-8%;transform:translateX(-50%);--w:min(30vw,420px);z-index:2}
+.steamsec .copy{padding:80px clamp(30px,6vw,110px)}
+.steamsec h2{font-size:clamp(50px,6.5vw,104px);font-weight:400}
+.steamsec h2 em{color:var(--gold-soft)}
+.steamsec p{margin:30px 0;max-width:430px;opacity:.82;font-size:18px}
+.notes{display:flex;gap:40px;margin-top:40px;border-top:1px solid rgba(239,231,214,.18);padding-top:28px}
+.notes div b{display:block;font:500 34px/1 var(--serif);color:var(--gold-soft)}
+.notes div span{font-size:12px;letter-spacing:.2em;text-transform:uppercase;opacity:.65}
+
+/* Ritual */
+.ritual h2{font-size:clamp(46px,6vw,90px);text-align:center}
+.ritual .lead{text-align:center;max-width:560px;margin:24px auto 90px;color:#3a5244}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:34px}
+.step .ph{overflow:hidden;aspect-ratio:3/4;margin-bottom:28px;position:relative}
+.step .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s var(--ease)}
+.step:hover .ph img{transform:scale(1.06)}
+.step .ph span{position:absolute;top:18px;left:20px;color:var(--ivory);font:italic 500 22px var(--serif)}
+.step h3{font-size:34px;margin-bottom:10px}
+.step p{color:#3a5244;font-size:16px}
+.step:nth-child(2){margin-top:80px}
+
+/* Carta */
+.carta{background:var(--ivory)}
+.carta-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:80px}
+.carta h2{font-size:clamp(56px,8vw,128px)}
+.carta h2 em{color:var(--green2)}
+.carta-head p{color:#3a5244;max-width:440px}
+.carta-body{display:grid;grid-template-columns:repeat(3,1fr);gap:60px}
+.carta-cat{font:500 11px/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;padding-bottom:20px;border-bottom:1px solid var(--ink);margin-bottom:10px}
+.carta ul{list-style:none}
+.dish{padding:24px 0;border-bottom:1px solid rgba(20,48,29,.15)}
+.dish-h{display:flex;align-items:baseline;gap:10px}
+.dish-n{font:500 27px/1.1 var(--serif)}
+.dots{flex:1;border-bottom:1px dotted rgba(20,48,29,.4);transform:translateY(-5px)}
+.dish-p{font:500 22px var(--serif)}.dish-p small{font-size:.7em;margin-left:2px}
+.dish p{font-size:14px;color:#4a5d51;margin-top:6px}
+.dish p em{display:block;font:italic 15px var(--serif);color:var(--green2);margin-top:2px}
+.carta-foot{margin-top:60px;display:flex;justify-content:space-between;align-items:center;gap:30px;flex-wrap:wrap;font-size:14px;color:#4a5d51}
+
+/* Espacio */
+.space{height:115svh;overflow:hidden;color:var(--ivory)}
+.space .bg{position:absolute;inset:-12% 0;will-change:transform}
+.space .bg img{width:100%;height:100%;object-fit:cover}
+.space::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(0deg,rgba(12,30,18,.85),rgba(12,30,18,.1) 55%)}
+.space .wrap{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding-bottom:12vh}
+.space h2{font-size:clamp(50px,7.5vw,120px);font-weight:400;max-width:11ch}
+.space h2 em{color:var(--gold-soft)}
+.space .cols{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:50px;border-top:1px solid rgba(239,231,214,.25);padding-top:28px;max-width:960px}
+.space .cols p{font-size:15px;opacity:.85}
+.space .cols b{display:block;font:italic 500 22px var(--serif);color:var(--gold-soft);margin-bottom:6px}
+
+/* Llevar */
+.togo .grid{display:grid;grid-template-columns:1.3fr 1fr;gap:clamp(40px,6vw,100px);align-items:center}
+.togo .ph{overflow:hidden}.togo .ph img{width:100%;aspect-ratio:3/2;object-fit:cover}
+.togo h2{font-size:clamp(46px,5.6vw,86px)}
+.togo h2 em{color:#B98A12}
+.togo p{margin:26px 0;color:#3a5244;max-width:440px}
+.togo ol{list-style:none;counter-reset:s;margin-bottom:36px}
+.togo li{counter-increment:s;display:flex;gap:18px;padding:14px 0;border-bottom:1px solid rgba(20,48,29,.15);font-size:15px}
+.togo li::before{content:"0" counter(s);font:italic 500 20px var(--serif);color:#B98A12}
+
+/* Visita */
+.visit{background:var(--ink);color:var(--ivory);text-align:center;overflow:hidden}
+.visit .big{width:min(440px,70vw);margin:0 auto 50px;animation:turn 60s linear infinite;opacity:.95}
+@keyframes turn{to{transform:rotate(360deg)}}
+.visit h2{font-size:clamp(54px,8vw,130px);font-weight:400}
+.visit h2 em{color:var(--gold-soft)}
+.visit .lead{max-width:520px;margin:26px auto 50px;opacity:.8;font-size:18px}
+.vinfo{display:grid;grid-template-columns:repeat(3,1fr);margin-top:100px;border-top:1px solid rgba(239,231,214,.18);text-align:left}
+.vinfo div{padding:34px 30px 0 0}
+.vinfo .eyebrow{color:var(--gold-soft);margin-bottom:14px;display:block}
+.vinfo p{font:400 24px/1.35 var(--serif)}
+footer{background:#0c1d12;color:rgba(239,231,214,.6);font-size:13px;padding:30px 0}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+
+/* ── Móvil ── */
+@media (max-width:900px){
+  nav ul{display:none}
+  .wrap{width:calc(100% - 32px)}
+  .hero::before{background:linear-gradient(0deg,rgba(12,30,18,.92) 0%,rgba(12,30,18,.55) 50%,rgba(12,30,18,.15) 100%)}
+  .hero .steam{left:83%;top:4%;--w:30vw}
+  .hero-media img{object-position:75% 50%}
+  .scroll-cue{display:none}
+  .manifesto .grid,.steamsec .grid,.carta-head,.togo .grid{grid-template-columns:1fr}
+  .figure .tag{left:12px}
+  .pgrid{grid-template-columns:1fr 1fr}
+  .pill{padding:30px 16px 20px 0!important;border-right:0;border-bottom:1px solid rgba(239,231,214,.12)}
+  .cupwrap{min-height:70svh}.cupwrap::after{background:linear-gradient(0deg,#0f2416,transparent 40%)}
+  .cupwrap .steam{--w:60vw}
+  .steps{grid-template-columns:1fr}.step:nth-child(2){margin-top:0}
+  .carta-body{grid-template-columns:1fr;gap:30px}
+  .space .cols,.vinfo{grid-template-columns:1fr}
+  .notes{gap:24px}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}.curtain{display:none}}
+</style>
+</head>
+<body>
+<div class="curtain" aria-hidden="true"><img src="{{seal}}" alt=""><span class="eyebrow">Churrería de obrador</span></div>
+
+<nav id="nav"><div class="wrap">
+  <a class="brand" href="#top"><img src="{{seal}}" alt="">GUSGO</a>
+  <ul><li><a href="#casa">La casa</a></li><li><a href="#ritual">El ritual</a></li><li><a href="#carta">Carta</a></li><li><a href="#espacio">Espacio</a></li></ul>
+  <a class="btn" href="#visita">Reservar mesa</a>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="hero-media"><img src="{{hero}}" alt="Lazos de churro recién fritos junto a una taza de chocolate negro humeante."></div>
+  {{STEAM}}
+  <div class="wrap hero-copy">
+    <span class="eyebrow fade-in">Churrería de obrador · Tandas cortas</span>
+    <h1><span class="line"><span>El primer</span></span><span class="line"><span><em>crujido.</em></span></span></h1>
+    <p class="fade-in">Masa recién frita, una curva que se coge con dos dedos y chocolate negro servido aparte, todavía humeante.</p>
+    <div class="ctas fade-in"><a class="btn fill" href="#visita">Reservar mesa <i>→</i></a><a class="btn" href="#carta">Ver la carta</a></div>
+  </div>
+  <span class="scroll-cue eyebrow">Descubrir</span>
+</header>
+
+<div class="ribbon" aria-hidden="true"><div>
+  <span>Tandas cortas</span><b>✦</b><span>Cacao al 70 %</span><b>✦</b><span>Café de especialidad</span><b>✦</b><span>Aceite de oliva suave</span><b>✦</b><span>Hecho a la vista</span><b>✦</b>
+  <span>Tandas cortas</span><b>✦</b><span>Cacao al 70 %</span><b>✦</b><span>Café de especialidad</span><b>✦</b><span>Aceite de oliva suave</span><b>✦</b><span>Hecho a la vista</span><b>✦</b>
+</div></div>
+
+<section class="manifesto pad" id="casa"><div class="wrap grid">
+  <div class="figure reveal"><div class="frame"><img src="{{macro}}" alt="Detalle de la estría dorada de un lazo recién frito."></div>
+    <div class="tag"><b>Minuto 1</b><small>El momento exacto en que servimos cada lazo.</small></div></div>
+  <div>
+    <span class="eyebrow reveal">La casa</span>
+    <h2 class="reveal d1" style="margin-top:24px">No hacemos churros.<br>Hacemos <em>el momento</em> de comerlos.</h2>
+    <p class="reveal d2">En GUSGO la masa no espera en ninguna vitrina. Sale de la boquilla cuando tú llegas, en tandas cortas, y llega a la mesa con el azúcar aún brillando. Tres ingredientes, un gesto de muñeca y la paciencia de hacerlo bien cada vez.</p>
+    <div class="sig reveal d3"><img src="{{seal_dark}}" alt=""><span>La espiral es nuestra firma: el recorrido de la masa.</span></div>
+  </div>
+</div></section>
+
+<section class="pillars pad"><div class="wrap">
+  <header><h2 class="reveal">Lo que nos hace <em>distintos.</em></h2><p class="reveal d1">Pocas cosas, muy bien hechas. Una carta breve que se puede recordar y un estándar que no se negocia.</p></header>
+  <div class="pgrid">
+    <div class="pill reveal"><div class="num">3</div><h3>Ingredientes</h3><p>Harina de trigo, agua y sal. Nada que esconder, todo que cuidar.</p></div>
+    <div class="pill reveal d1"><div class="num">70<sup>%</sup></div><h3>Cacao</h3><p>Cobertura negra ligada a mano. Espesa para mojar, amarga al final del sorbo.</p></div>
+    <div class="pill reveal d2"><div class="num">0</div><h3>Vitrinas</h3><p>Ningún lazo espera. Cada tanda se fríe para quien la va a comer.</p></div>
+    <div class="pill reveal d3"><div class="num">1</div><h3>Firma</h3><p>Una espiral marfil sobre verde. La reconocerás en la taza, la caja y la puerta.</p></div>
+  </div>
+</div></section>
+
+<section class="steamsec"><div class="grid">
+  <div class="cupwrap"><img src="{{cup}}" alt="Taza de cerámica con chocolate negro caliente.">{{STEAM}}</div>
+  <div class="copy">
+    <span class="eyebrow reveal" style="color:var(--gold-soft)">A la taza</span>
+    <h2 class="reveal d1" style="margin-top:24px">Se sirve<br>cuando <em>humea.</em></h2>
+    <p class="reveal d2">Chocolate negro al 70 % de cacao, espeso para mojar y servido en cerámica artesana que guarda el calor. Si prefieres café, lo preparamos al momento, de filtro y de especialidad.</p>
+    <div class="notes reveal d3"><div><b>150 ml</b><span>Chocolate</span></div><div><b>180 ml</b><span>Café de filtro</span></div><div><b>70 %</b><span>Cacao</span></div></div>
+  </div>
+</div></section>
+
+<section class="ritual pad" id="ritual"><div class="wrap">
+  <span class="eyebrow reveal" style="display:block;text-align:center;margin-bottom:24px">El ritual GUSGO</span>
+  <h2 class="reveal d1">Tres gestos, <em>una merienda.</em></h2>
+  <p class="lead reveal d2">Así se disfruta un lazo recién hecho. Te lo contamos en la barra; aquí, por adelantado.</p>
+  <div class="steps">
+    <article class="step reveal"><div class="ph"><img src="{{macro}}" alt=""><span>I.</span></div><h3>Al natural</h3><p>El primer bocado, solo. Para escuchar cómo cruje la estría.</p></article>
+    <article class="step reveal d1"><div class="ph"><img src="{{cup}}" alt=""><span>II.</span></div><h3>Mojar</h3><p>Una sola punta en el chocolate. Que el cacao llegue después del crujido.</p></article>
+    <article class="step reveal d2"><div class="ph"><img src="{{roomdet}}" alt="" style="object-position:40% 50%"><span>III.</span></div><h3>Quedarse</h3><p>Otra taza para compartir y tiempo para conversar. Aquí nadie tiene prisa.</p></article>
+  </div>
+</div></section>
+
+<section class="carta pad" id="carta"><div class="wrap">
+  <div class="carta-head"><h2 class="reveal">La <em>carta.</em></h2><p class="reveal d1">Breve a propósito. Una masa, dos formas —el lazo fino, el bastón relleno— y las bebidas que mejor los acompañan.</p></div>
+  <div class="carta-body reveal d1">{{CARTA}}</div>
+  <div class="carta-foot"><span>Precios con IVA incluido. Consulta alérgenos en barra.</span><a class="btn" href="#visita">Reservar mesa <i>→</i></a></div>
+</div></section>
+
+<section class="space" id="espacio">
+  <div class="bg" data-parallax><img src="{{room}}" alt="Interior de GUSGO: barra de azulejo verde, mesas de mármol y luz de ventana."></div>
+  <div class="wrap">
+    <span class="eyebrow reveal" style="color:var(--gold-soft);margin-bottom:24px">El espacio</span>
+    <h2 class="reveal d1">La barra, <em>a la vista.</em></h2>
+    <div class="cols">
+      <p class="reveal d1"><b>Azulejo verde</b>Frente de barra en verde mate y cal marfil en las paredes.</p>
+      <p class="reveal d2"><b>Luz de tarde</b>Ventanal lateral que dora la mesa justo a la hora de merendar.</p>
+      <p class="reveal d3"><b>Pase abierto</b>Desde tu mesa ves salir la tanda. Nada ocurre a escondidas.</p>
+    </div>
+  </div>
+</section>
+
+<section class="togo pad"><div class="wrap grid">
+  <div class="ph reveal"><img src="{{pack}}" alt="Estuche marfil de GUSGO con faja amarilla junto a un lazo y un vaso de chocolate."></div>
+  <div>
+    <span class="eyebrow reveal">Para llevar</span>
+    <h2 class="reveal d1" style="margin-top:24px">Un regalo que <em>cruje.</em></h2>
+    <p class="reveal d2">Nuestro estuche marfil con faja amarilla está pensado para que el lazo llegue crujiente y el chocolate caliente, cada uno en su sitio.</p>
+    <ol class="reveal d3"><li>Ranuras laterales que dejan salir el vapor.</li><li>Papel antigrasa y una sola capa de lazos.</li><li>Vaso con tapa en soporte independiente.</li></ol>
+    <a class="btn reveal d3" href="#visita">Encargar para recoger <i>→</i></a>
+  </div>
+</div></section>
+
+<section class="visit pad" id="visita"><div class="wrap">
+  <img class="big reveal" src="{{seal}}" alt="Sello de GUSGO">
+  <h2 class="reveal d1">¿Merendamos<br>en <em>GUSGO?</em></h2>
+  <p class="lead reveal d2">Reserva tu mesa para la merienda o encarga tu estuche y pásate a recogerlo. La próxima tanda puede ser la tuya.</p>
+  <a class="btn fill reveal d3" href="mailto:hola@gusgo.es?subject=Reserva%20de%20mesa">Reservar mesa <i>→</i></a>
+  <div class="vinfo">
+    <div class="reveal"><span class="eyebrow">Dónde</span><p>Dirección del local<br>Ciudad</p></div>
+    <div class="reveal d1"><span class="eyebrow">Cuándo</span><p>Martes a domingo<br>Mañanas y meriendas</p></div>
+    <div class="reveal d2"><span class="eyebrow">Hablemos</span><p>hola@gusgo.es<br>@gusgo</p></div>
+  </div>
+</div></section>
+<footer><div class="wrap"><span>© GUSGO · Churrería de obrador</span><span>Hecho a la vista, servido al momento.</span></div></footer>
+
+<script>
+const nav=document.getElementById('nav');
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+const px=document.querySelector('[data-parallax]');
+addEventListener('scroll',()=>{
+  nav.classList.toggle('solid',scrollY>60);
+  if(px){const r=px.parentElement.getBoundingClientRect();px.style.transform=`translateY(${(r.top*-.12).toFixed(1)}px)`}
+},{passive:true});
+</script>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>GUSGO · Dossier</title>
+<style>
+{{FONTS}}
+@page{size:A4;margin:0}
+:root{--ink:#14301D;--green2:#244533;--deep:#0f2416;--cream:#F7F2E4;--ivory:#EFE7D6;--gold:#D9AE3B;--gold-soft:#E8CB7A;
+  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Manrope',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font:400 10.5pt/1.6 var(--sans);color:var(--ink);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;height:297mm;position:relative;overflow:hidden;page-break-after:always;background:var(--cream);padding:20mm 18mm}
+.page.dark{background:var(--ink);color:var(--ivory)}
+.page.deep{background:var(--deep);color:var(--ivory)}
+.page.ivory{background:var(--ivory)}
+.eb{font:500 7pt/1 var(--sans);letter-spacing:.32em;text-transform:uppercase}
+.dark .eb,.deep .eb{color:var(--gold-soft)}
+h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:.95;letter-spacing:-.01em}
+h2{font-size:46pt;margin:8mm 0 7mm}
+h2 em,h1 em{color:var(--green2)}.dark h2 em,.deep h2 em,.full h2 em,.full h1 em{color:var(--gold-soft)}
+.lead{font-size:12.5pt;line-height:1.55;max-width:140mm}
+.dark .lead,.deep .lead{opacity:.85}
+.run{position:absolute;left:18mm;right:18mm;bottom:11mm;display:flex;justify-content:space-between;font:500 6.5pt/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;opacity:.55}
+.top{position:absolute;left:18mm;right:18mm;top:11mm;display:flex;justify-content:space-between;align-items:center;font:500 6.5pt/1 var(--sans);letter-spacing:.28em;text-transform:uppercase;opacity:.7}
+.top img{height:7mm}
+.full{padding:0;color:var(--ivory)}
+.full>img.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.full .shade{position:absolute;inset:0}
+.full .in{position:absolute;left:18mm;right:18mm;bottom:24mm}
+.steam{position:absolute;width:var(--w);mix-blend-mode:screen;opacity:.9}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10mm}
+.rule{border-top:.3mm solid currentColor;opacity:.25;margin:8mm 0}
+.num{font:400 40pt/1 var(--serif);color:var(--gold)}
+.dark .num,.deep .num{color:var(--gold-soft)}
+.ph{width:100%;object-fit:cover;display:block}
+.cap{font-size:7.5pt;opacity:.6;margin-top:2.5mm}
+.quote{font:italic 400 26pt/1.15 var(--serif)}
+</style></head><body>
+
+<!-- 1 · PORTADA -->
+<section class="page full">
+  <img class="bg" src="{{hero}}" style="object-position:62% 50%">
+  <div class="shade" style="background:linear-gradient(180deg,rgba(12,30,18,.75) 0%,rgba(12,30,18,.1) 30%,rgba(12,30,18,.1) 55%,rgba(12,30,18,.95) 100%)"></div>
+  <div style="position:absolute;left:90%;top:-6%;transform:translateX(-50%)">{{STEAM}}</div>
+  <div class="top" style="opacity:1"><span style="display:flex;align-items:center;gap:4mm"><img src="{{seal}}"><span style="letter-spacing:.5em;font-size:9pt">GUSGO</span></span><span>Dossier de marca · 2026</span></div>
+  <div class="in">
+    <span class="eb" style="color:var(--gold-soft)">Churrería de obrador</span>
+    <h1 style="font-size:92pt;font-weight:400;line-height:.85;margin:7mm 0 8mm">El primer<br><em>crujido.</em></h1>
+    <p class="lead" style="max-width:105mm;opacity:.9">Una casa de churros que empieza con un gesto de muñeca y termina con chocolate en el fondo de la taza.</p>
+  </div>
+  <div class="run" style="opacity:.7"><span>Confidencial · Presentación a cliente</span><span>01</span></div>
+</section>
+
+<!-- 2 · ÍNDICE -->
+<section class="page dark">
+  <div class="top"><span>GUSGO</span><span>Contenido</span></div>
+  <div style="margin-top:22mm;display:grid;grid-template-columns:62mm 1fr;gap:10mm">
+    <div><img src="{{seal}}" style="width:52mm"><p class="quote" style="margin-top:12mm;font-size:20pt">«¿Merendamos<br>en GUSGO?»</p></div>
+    <ol style="list-style:none">
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">01</span><div><h3 style="font-size:20pt">La casa</h3><p style="opacity:.7;font-size:9pt">Manifiesto y propuesta de valor</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">02</span><div><h3 style="font-size:20pt">Lo que nos hace distintos</h3><p style="opacity:.7;font-size:9pt">Cuatro pilares de exclusividad</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">03</span><div><h3 style="font-size:20pt">Producto y carta</h3><p style="opacity:.7;font-size:9pt">Una masa, dos formas, tres bebidas</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">04</span><div><h3 style="font-size:20pt">El ritual</h3><p style="opacity:.7;font-size:9pt">Experiencia en mesa y guion de servicio</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">05</span><div><h3 style="font-size:20pt">El espacio</h3><p style="opacity:.7;font-size:9pt">Materiales, luz y barra a la vista</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">06</span><div><h3 style="font-size:20pt">Para llevar</h3><p style="opacity:.7;font-size:9pt">Estuche, faja y entrega</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0;border-bottom:.2mm solid rgba(239,231,214,.2)"><span class="num" style="font-size:20pt;width:12mm">07</span><div><h3 style="font-size:20pt">Identidad</h3><p style="opacity:.7;font-size:9pt">Color, tipografía y voz</p></div></li>
+      <li style="display:flex;gap:6mm;padding:5mm 0"><span class="num" style="font-size:20pt;width:12mm">08</span><div><h3 style="font-size:20pt">La web</h3><p style="opacity:.7;font-size:9pt">Un escaparate que da hambre</p></div></li>
+    </ol>
+  </div>
+  <div class="run"><span>Churrería de obrador</span><span>02</span></div>
+</section>
+
+<!-- 3 · MANIFIESTO -->
+<section class="page">
+  <div class="top"><span>GUSGO</span><span>01 · La casa</span></div>
+  <div style="margin-top:14mm" class="two">
+    <div><span class="eb">Manifiesto</span>
+      <h2 style="font-size:40pt">No hacemos churros. Hacemos <em>el momento</em> de comerlos.</h2></div>
+    <img class="ph" src="{{macro}}" style="height:118mm">
+  </div>
+  <div class="rule"></div>
+  <div class="two">
+    <p class="lead" style="font-size:11.5pt">En GUSGO la masa no espera en ninguna vitrina. Sale de la boquilla cuando el cliente llega, en tandas cortas, y alcanza la mesa con el azúcar aún brillando.</p>
+    <p class="lead" style="font-size:11.5pt">Es una churrería de especialidad para quienes hacen sitio en su día a una buena merienda. Su valor se reconoce en el primer lazo: masa recién frita, una curva que se coge con dos dedos y chocolate servido aparte.</p>
+  </div>
+  <div style="margin-top:14mm;background:var(--ink);color:var(--ivory);padding:10mm 12mm;display:flex;align-items:center;gap:10mm">
+    <img src="{{seal}}" style="width:24mm">
+    <p class="quote" style="font-size:19pt">«Precisos con la receta. Cercanos con quien entra.»</p>
+  </div>
+  <div class="run"><span>Churrería de obrador</span><span>03</span></div>
+</section>
+
+<!-- 4 · PILARES -->
+<section class="page deep">
+  <div class="top"><span>GUSGO</span><span>02 · Exclusividad</span></div>
+  <div style="margin-top:12mm"><span class="eb">Lo que nos hace distintos</span>
+  <h2>Pocas cosas.<br><em>Muy bien hechas.</em></h2>
+  <p class="lead">La exclusividad de GUSGO no está en el precio: está en el cuidado. Cuatro compromisos que el cliente puede ver, oír y saborear.</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:14mm;border-top:.2mm solid rgba(239,231,214,.25)">
+    <div style="padding:9mm 8mm 9mm 0;border-right:.2mm solid rgba(239,231,214,.15);border-bottom:.2mm solid rgba(239,231,214,.15)"><div class="num" style="font-size:58pt">3</div><h3 style="font-size:21pt;margin:4mm 0 2mm">Ingredientes</h3><p style="opacity:.75">Harina de trigo, agua y sal, fritos en aceite de oliva suave. Nada que esconder.</p></div>
+    <div style="padding:9mm 0 9mm 8mm;border-bottom:.2mm solid rgba(239,231,214,.15)"><div class="num" style="font-size:58pt">70<span style="font-size:24pt">%</span></div><h3 style="font-size:21pt;margin:4mm 0 2mm">Cacao</h3><p style="opacity:.75">Cobertura negra ligada a mano. Fluida al mojar, amarga al final del sorbo.</p></div>
+    <div style="padding:9mm 8mm 0 0;border-right:.2mm solid rgba(239,231,214,.15)"><div class="num" style="font-size:58pt">0</div><h3 style="font-size:21pt;margin:4mm 0 2mm">Vitrinas</h3><p style="opacity:.75">Ningún lazo espera. Cada tanda se fríe para quien la va a comer.</p></div>
+    <div style="padding:9mm 0 0 8mm"><div class="num" style="font-size:58pt">1</div><h3 style="font-size:21pt;margin:4mm 0 2mm">Firma</h3><p style="opacity:.75">La espiral marfil sobre verde: en la taza, en la caja, en la puerta.</p></div>
+  </div>
+  <div class="run"><span>Churrería de obrador</span><span>04</span></div>
+</section>
+
+<!-- 5 · VAPOR (foto a sangre) -->
+<section class="page full">
+  <img class="bg" src="{{cup}}" style="object-position:55% 70%">
+  <div class="shade" style="background:linear-gradient(0deg,rgba(12,30,18,.95) 0%,rgba(12,30,18,.2) 45%,rgba(12,30,18,0) 70%)"></div>
+  <div style="position:absolute;left:52%;top:-10%;transform:translateX(-50%)">{{STEAM}}</div>
+  <div class="in"><span class="eb" style="color:var(--gold-soft)">A la taza</span>
+    <h2 style="font-size:64pt;font-weight:400">Se sirve<br>cuando <em>humea.</em></h2>
+    <p class="lead" style="max-width:120mm">Chocolate negro al 70 % de cacao, espeso para mojar, servido en cerámica artesana que guarda el calor. O café de filtro de especialidad, preparado al momento.</p></div>
+  <div class="run" style="opacity:.7"><span>Churrería de obrador</span><span>05</span></div>
+</section>
+
+<!-- 6 · CARTA -->
+<section class="page ivory">
+  <div class="top"><span>GUSGO</span><span>03 · Producto</span></div>
+  <div style="margin-top:12mm"><span class="eb">Carta de lanzamiento</span>
+  <h2>Una masa, <em>dos formas.</em></h2>
+  <p class="lead">El lazo fino se sirve abierto; el bastón corto admite relleno. Breve a propósito, para que se recuerde y se vuelva a pedir.</p></div>
+  <div style="margin-top:9mm;display:grid;grid-template-columns:1fr 1fr;gap:0 12mm" id="carta">{{CARTA}}</div>
+  <p class="cap" style="margin-top:6mm">PVP orientativos con IVA para el piloto. Validar recetas, alérgenos y escandallos antes de imprimir.</p>
+  <style>
+    .carta-col:last-child{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;column-gap:12mm}.carta-col:last-child h3{grid-column:1/-1}
+    .carta-cat{font:500 7pt/1 var(--sans);letter-spacing:.32em;text-transform:uppercase;padding:5mm 0 3mm;border-bottom:.3mm solid var(--ink)}
+    #carta ul{list-style:none;display:contents}.dish{padding:3.4mm 0;border-bottom:.2mm solid rgba(20,48,29,.18)}
+    .dish-h{display:flex;align-items:baseline;gap:2mm}.dish-n{font:500 15pt/1.1 var(--serif)}.dots{flex:1;border-bottom:.3mm dotted rgba(20,48,29,.45)}
+    .dish-p{font:500 14pt var(--serif)}.dish p{font-size:8.5pt;color:#4a5d51}.dish p em{display:block;font:italic 10pt var(--serif);color:var(--green2)}
+  </style>
+  <div class="run"><span>Churrería de obrador</span><span>06</span></div>
+</section>
+
+<!-- 7 · RITUAL -->
+<section class="page">
+  <div class="top"><span>GUSGO</span><span>04 · Experiencia</span></div>
+  <div style="margin-top:12mm"><span class="eb">El ritual GUSGO</span>
+  <h2>Tres gestos, <em>una merienda.</em></h2></div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6mm">
+    <div><img class="ph" src="{{macro}}" style="height:72mm"><p class="num" style="font-size:22pt;margin-top:4mm">I.</p><h3 style="font-size:17pt;margin:1mm 0">Al natural</h3><p style="font-size:9pt">El primer bocado, solo, para escuchar cómo cruje la estría.</p></div>
+    <div style="margin-top:12mm"><img class="ph" src="{{cup}}" style="height:72mm"><p class="num" style="font-size:22pt;margin-top:4mm">II.</p><h3 style="font-size:17pt;margin:1mm 0">Mojar</h3><p style="font-size:9pt">Una sola punta en el chocolate. Que el cacao llegue después del crujido.</p></div>
+    <div><img class="ph" src="{{roomdet}}" style="height:72mm"><p class="num" style="font-size:22pt;margin-top:4mm">III.</p><h3 style="font-size:17pt;margin:1mm 0">Quedarse</h3><p style="font-size:9pt">Otra taza para compartir y tiempo para conversar.</p></div>
+  </div>
+  <div style="margin-top:10mm;background:var(--ink);color:var(--ivory);padding:8mm 10mm">
+    <span class="eb">Guion de servicio</span>
+    <p style="margin-top:4mm;font-size:10pt;opacity:.9">Recibir con «¿Te apetece mojar o prefieres un relleno?». Anunciar la espera real de la tanda. Llevar primero la bebida y después los lazos. Al apoyar el plato, sugerir el primer bocado al natural. Dejar espacio para conversar.</p>
+  </div>
+  <div class="run"><span>Churrería de obrador</span><span>07</span></div>
+</section>
+
+<!-- 8 · ESPACIO -->
+<section class="page full">
+  <img class="bg" src="{{room}}" style="object-position:38% 50%">
+  <div class="shade" style="background:linear-gradient(0deg,rgba(12,30,18,.95) 0%,rgba(12,30,18,.35) 45%,rgba(12,30,18,0) 70%)"></div>
+  <div class="top" style="opacity:.9"><span>GUSGO</span><span>05 · El espacio</span></div>
+  <div class="in"><span class="eb" style="color:var(--gold-soft)">Interior y servicio</span>
+    <h2 style="font-size:60pt;font-weight:400">La barra,<br><em>a la vista.</em></h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7mm;border-top:.2mm solid rgba(239,231,214,.3);padding-top:6mm;margin-top:4mm;font-size:9pt">
+      <p><b style="display:block;font:italic 500 14pt var(--serif);color:var(--gold-soft)">Azulejo verde</b>Frente de barra mate y cal marfil en las paredes.</p>
+      <p><b style="display:block;font:italic 500 14pt var(--serif);color:var(--gold-soft)">Luz de tarde</b>Ventanal lateral que dora la mesa a la hora de merendar.</p>
+      <p><b style="display:block;font:italic 500 14pt var(--serif);color:var(--gold-soft)">Pase abierto</b>Desde la mesa se ve salir la tanda.</p>
+    </div></div>
+  <div class="run" style="opacity:.7"><span>Visualización conceptual</span><span>08</span></div>
+</section>
+
+<!-- 9 · PARA LLEVAR -->
+<section class="page ivory">
+  <div class="top"><span>GUSGO</span><span>06 · Para llevar</span></div>
+  <div style="margin-top:12mm"><span class="eb">El estuche</span>
+  <h2>Un regalo que <em>cruje.</em></h2></div>
+  <img class="ph" src="{{pack}}" style="height:112mm">
+  <div class="two" style="margin-top:8mm">
+    <div><h3 style="font-size:18pt;margin-bottom:2mm">Abrir por el amarillo</h3><p style="font-size:9.5pt">Cartoncillo marfil apto para alimentos, papel antigrasa y ranuras laterales que liberan vapor. La faja identifica el pedido y señala por dónde abrir con una sola mano.</p></div>
+    <div><h3 style="font-size:18pt;margin-bottom:2mm">La entrega</h3><p style="font-size:9.5pt">El vaso con tapa viaja en soporte independiente. Mensaje interior: <em class="serif" style="font-size:11pt">«Empieza por el lazo de arriba».</em></p></div>
+  </div>
+  <div class="run"><span>Maqueta conceptual</span><span>09</span></div>
+</section>
+
+<!-- 10 · IDENTIDAD -->
+<section class="page">
+  <div class="top"><span>GUSGO</span><span>07 · Identidad</span></div>
+  <div style="margin-top:12mm"><span class="eb">Sistema visual</span><h2>Tinta, papel <em>y oro.</em></h2></div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);height:44mm">
+    <div style="background:#14301D"></div><div style="background:#244533"></div><div style="background:#0f2416"></div>
+    <div style="background:#D9AE3B"></div><div style="background:#EFE7D6"></div><div style="background:#F7F2E4;border:.2mm solid #ddd"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);font-size:7pt;margin-top:2mm;letter-spacing:.05em">
+    <span>Verde tinta<br>#14301D</span><span>Verde sello<br>#244533</span><span>Verde noche<br>#0F2416</span><span>Oro café<br>#D9AE3B</span><span>Marfil<br>#EFE7D6</span><span>Papel crema<br>#F7F2E4</span>
+  </div>
+  <div class="rule"></div>
+  <div class="two">
+    <div><span class="eb">Titulares</span><p style="font:400 54pt/1 var(--serif);margin:4mm 0">Aa <em>Aa</em></p><p style="font-size:9pt"><b>Cormorant Garamond.</b> Serif de inspiración Garamond con cursiva de alta caligrafía: transmite oficio, tradición y lujo discreto.</p></div>
+    <div><span class="eb">Texto</span><p style="font:300 54pt/1 var(--sans);margin:4mm 0">Aa</p><p style="font-size:9pt"><b>Manrope.</b> Sans geométrica contemporánea, muy legible en carta, precios y pantalla. Versales espaciadas para rótulos.</p></div>
+  </div>
+  <div style="margin-top:9mm;background:var(--ink);color:var(--ivory);padding:9mm 10mm;display:flex;align-items:center;gap:9mm">
+    <img src="{{seal}}" style="width:26mm"><div><p style="font:500 26pt/1 var(--sans);letter-spacing:.45em">GUSGO</p><p class="eb" style="margin-top:3mm;color:var(--gold-soft)">Churrería de obrador</p></div>
+  </div>
+  <div class="run"><span>Churrería de obrador</span><span>10</span></div>
+</section>
+
+<!-- 11 · WEB -->
+<section class="page deep">
+  <div class="top"><span>GUSGO</span><span>08 · Web</span></div>
+  <div style="margin-top:12mm"><span class="eb">Escaparate digital</span>
+  <h2>Una web que <em>da hambre.</em></h2>
+  <p class="lead">Fotografía a pantalla completa, vapor animado sobre el chocolate, carta elegante y un único objetivo: que quien la vea quiera sentarse a merendar.</p></div>
+  <div style="position:relative;margin-top:10mm;height:120mm">
+    <div style="position:absolute;left:0;top:0;width:150mm;border-radius:2.5mm;overflow:hidden;box-shadow:0 10mm 24mm rgba(0,0,0,.5);border:.4mm solid rgba(239,231,214,.2)">
+      <div style="height:5mm;background:#24302a;display:flex;gap:1.4mm;align-items:center;padding-left:3mm"><i style="width:1.6mm;height:1.6mm;border-radius:50%;background:#e06c5a"></i><i style="width:1.6mm;height:1.6mm;border-radius:50%;background:#e5c04b"></i><i style="width:1.6mm;height:1.6mm;border-radius:50%;background:#6bbf6a"></i></div>
+      <img src="{{desk}}" style="width:100%;display:block"></div>
+    <div style="position:absolute;right:0;top:22mm;width:44mm;border-radius:6mm;overflow:hidden;border:1.6mm solid #0a0a0a;box-shadow:0 10mm 24mm rgba(0,0,0,.55)"><img src="{{mob}}" style="width:100%;display:block"></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7mm;font-size:9pt;margin-top:4mm">
+    <p><b style="display:block;font:italic 500 14pt var(--serif);color:var(--gold-soft)">Primera impresión</b>Telón con la espiral y titular que entra línea a línea.</p>
+    <p><b style="display:block;font:italic 500 14pt var(--serif);color:var(--gold-soft)">Sensorial</b>Vapor en movimiento, grano de película y parallax en el espacio.</p>
+    <p><b style="display:block;font:italic 500 14pt var(--serif);color:var(--gold-soft)">Conversión</b>«Reservar mesa» siempre a mano, en móvil y escritorio.</p>
+  </div>
+  <div class="run"><span>Archivo único · funciona sin conexión</span><span>11</span></div>
+</section>
+
+<!-- 12 · CIERRE -->
+<section class="page dark" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center">
+  <img src="{{seal}}" style="width:70mm">
+  <h2 style="font-size:58pt;font-weight:400;margin-top:14mm">¿Merendamos<br>en <em>GUSGO?</em></h2>
+  <p class="lead" style="margin:0 auto">La próxima tanda puede ser la tuya.</p>
+  <p class="eb" style="margin-top:18mm">Churrería de obrador</p>
+  <div class="run"><span>GUSGO · Dossier de marca</span><span>12</span></div>
+</section>
+</body></html>
